@@ -1,0 +1,1 @@
+Peut on modifier la méthode enlever pour la passer boolean au lieu de while 
