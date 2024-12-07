@@ -68,7 +68,7 @@ Si d'autres personnes ont modifié le code, vous devez récupérer leurs changem
 ### Étape 1 : Récupérer les dernières modifications
 Avant de commencer à travailler, tapez cette commande pour récupérer les dernières mises à jour du dépôt :
 ```bash
-git pull
+git pull origin main
 ```
 
 Cela garantit que vous travaillez sur la version la plus récente du projet.
