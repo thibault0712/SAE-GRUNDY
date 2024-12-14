@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Jeu de Grundy avec IA pour la machine
- * Ce programme ne contient que les méthodes permettant de tester jouerGagnant()
- * Cette version est brute sans aucune amélioration
+ * Grundy Game with AI for the machine
+ * This program only contains methods to test jouerGagnant()
+ * This version is raw without any improvement
  *
  * @author J-F. Kamp, C. Tibermacine, T. FALEZAN, G. MAILLARD
  */
@@ -14,7 +14,7 @@ import java.util.Collections;
 class GrundyRecBrute {
 
     /**
-     * Principal method
+     * Main Principal
      */
     void principal() {
         testJouerGagnant();
@@ -35,10 +35,12 @@ class GrundyRecBrute {
 
         do {
             playerName = SimpleInput.getString("Entrer votre nom : ");
+            System.out.println();
         } while (playerName == null);
 
         do{
-            nbMatchSticks = SimpleInput.getInt("Entrer le nombre d'alumette : ");
+            nbMatchSticks = SimpleInput.getInt("Veuillez entrer le nombre d'alumette : ");
+            System.out.println();
         } while (nbMatchSticks <= 2);
 
         jeu = new ArrayList<Integer>();
@@ -61,7 +63,8 @@ class GrundyRecBrute {
         }
 
         displayMatchsticks(jeu);
-
+		
+		System.out.println();
         System.out.println("Le jeu est terminé, bien joué à " + winner + " !");
         
     }
@@ -72,6 +75,7 @@ class GrundyRecBrute {
      * @param jeu the table of matchticks
      */
     void displayMatchsticks(ArrayList<Integer> jeu){
+		System.out.println();
         System.out.print("Jeu actuel : ");
 
         for (int i = 0; i < jeu.size(); i++) {
@@ -88,22 +92,51 @@ class GrundyRecBrute {
 
         System.out.println();
     }
+    
+    void testDisplayMatchsticks(){
+		
+	}
 
     /**
-     * Edit the matchsticks for player
-     * 
-     * @param jeu the table of matchsticks
-     * @param playerName the name of the player
-     */
-    void playerEditMatchsticks(ArrayList<Integer> jeu, String playerName){
-        int line;
-        int nb;
+	 * Allows the player to modify the number of matchsticks in a pile.
+	 * The player cannot remove all the matchsticks from a pile.
+	 *
+	 * @param jeu List representing the piles of matchsticks.
+	 * @param playerName The player's name.
+	 */
+	void playerEditMatchsticks(ArrayList<Integer> jeu, String playerName) {
+		int line;
+		int nb;
 
-        line = SimpleInput.getInt(playerName + " -> Choisisser le tas à modifier : ");
-        nb = SimpleInput.getInt(playerName + " -> Choisisser le nombre d'alumette à séparer : ");
+		
+		do {
+			line = SimpleInput.getInt("\n" + playerName + " -> Choisissez le tas à modifier (entre 0 et " + (jeu.size() - 1) + ") : ");
+			
+			if (line < 0 || line >= jeu.size()) {
+				System.out.println("Erreur : Le numéro de tas choisi est invalide. Veuillez réessayer. ");
+			} 
+			else if (jeu.get(line) <= 2) {
+				System.out.println("Erreur : Vous ne pouvez pas choisir un tas contenant 1 ou 2 allumettes. Veuillez réessayer. ");
+			}
+		} while (line < 0 || line >= jeu.size() || jeu.get(line) <= 2);
 
-        enlever(jeu, line, nb);
-    }
+		
+		do {
+			nb = SimpleInput.getInt("\n" + playerName + " -> Choisissez le nombre d'allumettes à retirer (entre 1 et " + (jeu.get(line) - 1) + ") : ");
+			
+			if (nb < 1 || nb >= jeu.get(line)) {
+				System.out.println("Erreur : Le nombre d'allumettes à retirer est invalide. Veuillez réessayer. ");
+			} 
+			else if (jeu.get(line) - nb == nb) {
+				System.out.println("Erreur : La séparation en deux tas égaux est interdite. Veuillez réessayer. ");
+			}
+		} while (nb < 1 || nb >= jeu.get(line) || jeu.get(line) - nb == nb);
+
+		
+		enlever(jeu, line, nb);
+	}
+
+
 
     /**
      * Edit the matchsticks for the robot
@@ -113,17 +146,43 @@ class GrundyRecBrute {
     void robotEditMatchsticks(ArrayList<Integer> jeu){
         boolean played = jouerGagnant(jeu);
         int i = 0;
-
+		
+		System.out.println();
         System.out.println("Robot -> en train de jouer");
 
         //If it's impossible to have a winning move, the robot will play by removing 1 matchstick from the first line with more than 2 matchsticks
         while(i < jeu.size() && !played){ 
             if(jeu.get(i) > 2){
-                enlever(jeu, i, 1);
+                robotPlayedRandom(jeu);
                 played = true;
             }
         }
     }
+    
+    /**
+	 * Allows the robot to play by randomly removing matchsticks,
+	 * while respecting the rule of not creating two equal piles.
+	 *
+	 * @param jeu List representing the piles of matchsticks.
+	 */
+	void robotPlayedRandom(ArrayList<Integer> jeu) {
+		int line; // Index du tas sélectionné
+		int nb;   // Nombre d'allumettes à retirer
+
+		System.out.println();
+		System.out.println("Robot -> en train de jouer (choix aléatoire)");
+
+		do {
+			line = (int) (Math.random() * jeu.size()); // Sélection d'un tas au hasard
+		} while (jeu.get(line) <= 2); // Ignorer les tas contenant 2 allumettes ou moins
+
+		do {
+			nb = (int) (Math.random() * (jeu.get(line) - 1)) + 1; // Retirer entre 1 et (taille du tas - 1)
+		} while (nb == jeu.get(line) / 2); // Éviter de diviser le tas en deux parties égales
+
+		enlever(jeu, line, nb); // Mise à jour du jeu
+		System.out.println("Robot a retiré " + nb + " allumette(s) du tas " + line + ".");
+	}
 	
     /**
      * Joue le coup gagnant s'il existe
@@ -183,6 +242,7 @@ class GrundyRecBrute {
     boolean estPerdante(ArrayList<Integer> jeu) {
 	
         boolean ret = true; // par défaut la configuration est perdante
+		
 		
         if (jeu == null) {
             System.err.println("estPerdante(): le paramètre jeu est null");
