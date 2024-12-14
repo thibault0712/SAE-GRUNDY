@@ -1,0 +1,28 @@
+name: Java compilation
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Vérification du repo
+        uses: actions/checkout@v3
+
+      - name: Mise en place du JDK 8
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+
+      - name: Lancement de la compilation des fichiers
+        run:
+          chmod +x ws/compilation.sh
+          ./ws/compilation.sh
