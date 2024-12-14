@@ -26,4 +26,4 @@ jobs:
         run: |
           cd ws
           chmod +x compilation.sh
-          ./compilation.sh
+          ./compilation.sh all debug
