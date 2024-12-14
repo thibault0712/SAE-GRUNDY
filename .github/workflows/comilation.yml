@@ -22,10 +22,8 @@ jobs:
           java-version: '8'
           distribution: 'temurin'
 
-      - name: Changement de répertoire
-        run: cd ws
-
       - name: Lancement de la compilation des fichiers
         run: |
+          cd ws
           chmod +x compilation.sh
           ./compilation.sh
