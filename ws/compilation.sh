@@ -12,7 +12,7 @@ for fichier in "$SOURCE_DIR"/*; do
   # Vérifier que l'élément est un fichier régulier
   if [ -f "$fichier" ]; then
     echo -e "\033[1;33mCompilation de : $fichier\033[0m"
-    javac -d "$CLASS_DIR" "$fichier" > /dev/null 2>&1
+    javac -d "$CLASS_DIR" "$fichier"
 
     # Vérifier si la compilation a réussi
     if [ $? -eq 0 ]; then
