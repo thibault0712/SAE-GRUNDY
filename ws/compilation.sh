@@ -27,7 +27,7 @@ if [ "$param1" == "workflow" ]; then # Compilation pour le workflow GitHub
     exit 1
   fi
 
-  if echo "$outputJavaDoc" | grep -q "warning"; then
+  if grep -i "warning" $outputJavaDoc; then
     echo -e "\033[1;33m❌ Erreur des warnings on été détecté sur la javadoc !\033[0m"
     exit 1
   fi
