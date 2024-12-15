@@ -5,4 +5,4 @@
 
 
 
-  - Vérifier si on a bien toutes nos méthodes de test
+  - Vérifier si on a bien toutes nos méthodes de test (testDisplayMatchStick)
