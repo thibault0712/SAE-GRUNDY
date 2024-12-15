@@ -16,7 +16,7 @@ echo -e "\033[1;34m=== Début de la compilation des fichiers Java dans '$SOURCE_
 
 if [ "$param1" == "workflow" ]; then # Compilation pour le workflow GitHub
   javac ../src/*.java
-  outputJavaDoc=$(javadoc -encoding UTF8 -private -d ../javaDoc ../src/*.java 2>&1)
+  outputJavaDoc=$(javadoc -encoding UTF8 -private -d ../javaDoc ../src/!(Start.java|SimpleInput.java) 2>&1)
   echo $outputJavaDoc
   
   # Vérifier si la compilation a réussi
