@@ -5,30 +5,24 @@ SOURCE_DIR="../src"
 # Répertoire cible pour les fichiers compilés
 CLASS_DIR="../class"
 
-param1=$1 # all -> on compile SimpleInput et Start en plus des autres fichiers | none -> on ne compile que les autres fichiers
-param2=$2 # debug -> on affiche les erreurs de compilation | none -> on ne les affiche pas
-param3=$3 # workflow -> on compile les fichiers pour le workflow | none -> on ne compile pas pour le workflow
+param1=$1 # all -> Compilation de tous les fichiers | workflow -> Compilation pour le workflow GitHub | none -> on compile les fichiers sauf SimpleInput et Start
+param2=$2 # debug -> Afficher les messages de compilation | none -> Ne pas afficher les messages de compilation
 
 echo -e "\033[1;34m=== Début de la compilation des fichiers Java dans '$SOURCE_DIR' ===\033[0m"
 
-# Ajouter un espace entre les crochets et les conditions
-if [ "$param1" == "all" ]; then
+
+
+if [ "$param1" == "workflow" ]; then # Compilation pour le workflow GitHub
+  javac ../src/*.java
+elif [ "$param1" == "all" ]; then # Compilation de tous les fichiers
   for fichier in "$SOURCE_DIR"/*; do
     # Vérifier que l'élément est un fichier régulier
-if [ -f "$fichier" ] && { [ "$fichier" == "../src/SimpleInput.java" ] || [ "$fichier" == "../src/Start.java" ]; }; then
+    if [ -f "$fichier" ] && { [ "$fichier" == "../src/SimpleInput.java" ] || [ "$fichier" == "../src/Start.java" ]; }; then
       echo -e "\033[1;33mCompilation de : $fichier\033[0m"
       if [ "$param2" == "debug" ]; then
-          if [ "$param3" == "workflow" ]; then
-              javac ../src/*.java
-          else
-              javac -d "$CLASS_DIR" "$fichier"
-          fi
+          javac -d "$CLASS_DIR" "$fichier"
       else
-          if [ "$param3" == "workflow" ]; then
-              javac "$fichier" > /dev/null 2>&1
-          else
-              javac -d "$CLASS_DIR" "$fichier" > /dev/null 2>&1
-          fi
+          javac -d "$CLASS_DIR" "$fichier" > /dev/null 2>&1
       fi
 
       # Vérifier si la compilation a réussi
@@ -42,35 +36,28 @@ if [ -f "$fichier" ] && { [ "$fichier" == "../src/SimpleInput.java" ] || [ "$fic
   done
 fi
 
+if [ "$param1" != "workflow" ]; then
+  # Parcourir tous les fichiers dans le répertoire source
+  for fichier in "$SOURCE_DIR"/*; do
+    # Vérifier que l'élément est un fichier régulier
+    if [ -f "$fichier" ] && [ "$fichier" != "../src/SimpleInput.java" ] && [ "$fichier" != "../src/Start.java" ]; then
+      echo -e "\033[1;33mCompilation de : $fichier\033[0m"
 
-# Parcourir tous les fichiers dans le répertoire source
-for fichier in "$SOURCE_DIR"/*; do
-  # Vérifier que l'élément est un fichier régulier
-if [ -f "$fichier" ] && [ "$fichier" != "../src/SimpleInput.java" ] && [ "$fichier" != "../src/Start.java" ]; then
-    echo -e "\033[1;33mCompilation de : $fichier\033[0m"
-
-    if [ "$param2" == "debug" ]; then
-          if [ "$param3" == "workflow" ]; then
-              javac ../src/*.java
-          else
-              javac -d "$CLASS_DIR" "$fichier"
-          fi
+      if [ "$param2" == "debug" ]; then
+          javac -d "$CLASS_DIR" "$fichier"
       else
-          if [ "$param3" == "workflow" ]; then
-              javac "$fichier" > /dev/null 2>&1
-          else
-              javac -d "$CLASS_DIR" "$fichier" > /dev/null 2>&1
-          fi
-    fi
+          javac -d "$CLASS_DIR" "$fichier" > /dev/null 2>&1
+      fi
 
-    # Vérifier si la compilation a réussi
-    if [ $? -eq 0 ]; then
-      echo -e "\033[1;32m✅️ Compilation réussie pour : $fichier\033[0m"
-    else
-      echo -e "\033[1;31m❌ Erreur lors de la compilation de : $fichier\033[0m"
-      exit 1
+      # Vérifier si la compilation a réussi
+      if [ $? -eq 0 ]; then
+        echo -e "\033[1;32m✅️ Compilation réussie pour : $fichier\033[0m"
+      else
+        echo -e "\033[1;31m❌ Erreur lors de la compilation de : $fichier\033[0m"
+        exit 1
+      fi
     fi
-  fi
-done
+  done
+fi
 
 echo -e "\033[1;34m=== Compilation terminée. Les fichiers compilés sont dans '$CLASS_DIR' ===\033[0m"
