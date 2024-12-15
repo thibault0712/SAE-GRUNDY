@@ -16,7 +16,7 @@ echo -e "\033[1;34m=== Début de la compilation des fichiers Java dans '$SOURCE_
 
 if [ "$param1" == "workflow" ]; then # Compilation pour le workflow GitHub
   javac ../src/*.java
-  outputJavaDoc=$(javadoc -encoding UTF8 -private -d ../javaDoc ../src/*.java)
+  outputJavaDoc=$(javadoc -encoding UTF8 -private -d ../javaDoc ../src/*.java 2>&1)
   echo $outputJavaDoc
   
   # Vérifier si la compilation a réussi
@@ -27,7 +27,7 @@ if [ "$param1" == "workflow" ]; then # Compilation pour le workflow GitHub
     exit 1
   fi
 
-  if grep -i "warning" $outputJavaDoc; then
+  if echo "$outputJavaDoc" | grep -i "warning"; then
     echo -e "\033[1;33m❌ Erreur des warnings on été détecté sur la javadoc !\033[0m"
     exit 1
   fi
