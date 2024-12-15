@@ -29,7 +29,7 @@ if [ "$param1" == "workflow" ]; then # Compilation pour le workflow GitHub
 
   if echo "$outputJavaDoc" | grep -i "warning"; then
     echo -e "\033[1;33m❌ Erreur des warnings on été détecté sur la javadoc !\033[0m"
-    exit 1
+    exit 78
   fi
 elif [ "$param1" == "all" ]; then # Compilation de tous les fichiers
   for fichier in "$SOURCE_DIR"/*; do
