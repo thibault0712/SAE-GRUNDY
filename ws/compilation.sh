@@ -19,7 +19,7 @@ if [ -f "$fichier" ] && { [ "$fichier" == "../src/SimpleInput.java" ] || [ "$fic
       echo -e "\033[1;33mCompilation de : $fichier\033[0m"
       if [ "$param2" == "debug" ]; then
           if [ "$param3" == "workflow" ]; then
-              javac "$fichier"
+              javac ../src/*.java
           else
               javac -d "$CLASS_DIR" "$fichier"
           fi
@@ -51,7 +51,7 @@ if [ -f "$fichier" ] && [ "$fichier" != "../src/SimpleInput.java" ] && [ "$fichi
 
     if [ "$param2" == "debug" ]; then
           if [ "$param3" == "workflow" ]; then
-              javac "$fichier"
+              javac ../src/*.java
           else
               javac -d "$CLASS_DIR" "$fichier"
           fi
