@@ -16,16 +16,20 @@ echo -e "\033[1;34m=== Début de la compilation des fichiers Java dans '$SOURCE_
 
 if [ "$param1" == "workflow" ]; then # Compilation pour le workflow GitHub
   javac ../src/*.java
-  javadoc -encoding UTF8 -private -d ../javaDoc ../src/*.java
+  outputJavaDoc=$(javadoc -encoding UTF8 -private -d ../javaDoc ../src/*.java)
+  echo $outputJavaDoc
+  
   # Vérifier si la compilation a réussi
   if [ $? -eq 0 ]; then
-      echo -e "\033[1;32m✅️ Compilation réussie"
-  elif [ $? -eq 1 ]; then
-      echo -e "\033[1;31m❌ Erreur de compilation"
-      exit 1
+    echo -e "\033[1;32m✅️ Compilation réussie"
   else
-      echo -e "\033[1;33m⚠️ Erreur inconnue lors de la compilation"
-      exit 2
+    echo -e "\033[1;31m❌ Erreur lors de la compilation"
+    exit 1
+  fi
+
+  if echo "$outputJavaDoc" | grep -q "warning"; then
+    echo -e "\033[1;33m❌ Erreur des warnings on été détecté sur la javadoc !\033[0m"
+    exit 1
   fi
 elif [ "$param1" == "all" ]; then # Compilation de tous les fichiers
   for fichier in "$SOURCE_DIR"/*; do
