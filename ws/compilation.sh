@@ -14,6 +14,7 @@ echo -e "\033[1;34m=== Début de la compilation des fichiers Java dans '$SOURCE_
 
 if [ "$param1" == "workflow" ]; then # Compilation pour le workflow GitHub
   javac ../src/*.java
+  javadoc -encoding UTF8 -private -d ../javaDoc ../src/*.java
 elif [ "$param1" == "all" ]; then # Compilation de tous les fichiers
   for fichier in "$SOURCE_DIR"/*; do
     # Vérifier que l'élément est un fichier régulier
