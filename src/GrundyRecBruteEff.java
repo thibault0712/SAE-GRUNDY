@@ -5,7 +5,7 @@ import java.util.ArrayList;
  * Ce programme ne contient que les méthodes permettant de tester jouerGagnant()
  * Cette version est brute sans aucune amélioration
  *
- * @author J-F. Kamp, C. Tibermacine, T. FALEZAN, G. MAILLARD
+ * @author J-F. Kamp, C. Tibermacine, T. FALEZAN, J. MAILLARD
  */
 
 class GrundyRecBruteEff {
@@ -58,11 +58,12 @@ class GrundyRecBruteEff {
                 winner = playerName;
             }
 
-            displayMatchsticks(jeu);
-
-            robotEditMatchsticks(jeu);
-            if(!estPossible(jeu)){
-                winner = "Robot";
+            if (winner == null){
+                displayMatchsticks(jeu);
+                robotEditMatchsticks(jeu);
+                if(!estPossible(jeu)){
+                    winner = "Robot";
+                }
             }
         }
 
@@ -95,15 +96,6 @@ class GrundyRecBruteEff {
 
         System.out.println();
     }
-
-    /**
-     * Test the displayMatchsticks method
-     *
-     */
-    // TODO
-    void testDisplayMatchsticks(){
-		
-	}
 
     /**
      * Edit the matchsticks for player
