@@ -1,9 +1,9 @@
 import java.util.ArrayList;
 
 /**
- * Jeu de Grundy avec IA pour la machine
- * Ce programme ne contient que les méthodes permettant de tester jouerGagnant()
- * Cette version est brute sans aucune amélioration
+ * Grundy Game with AI for the machine
+ * This program only contains methods to test jouerGagnant()
+ * This version is raw without any improvement
  *
  * @author J-F. Kamp, C. Tibermacine, T. FALEZAN, J. MAILLARD
  */
@@ -19,12 +19,26 @@ class GrundyRecBruteEff {
      * Principal method
      */
     void principal() {
+		System.out.println("------------------------------------------");
         testJouerGagnant();
+        System.out.println("------------------------------------------");
 		testPremier();
+		System.out.println("------------------------------------------");
 		testSuivant();
-
+		System.out.println("------------------------------------------");
+		testDisplayMatchsticks();
+		System.out.println("------------------------------------------");
+		testPlayerEditMatchsticks();
+		System.out.println("------------------------------------------");
+		testRobotEditMatchsticks() ;
+		System.out.println("------------------------------------------");
+		testRobotPlayedRandom();
+		System.out.println("------------------------------------------");
+		System.out.println();
+        System.out.println("Test d'efficacités");
         testEstGagnanteEfficacite();
-
+		
+		System.out.println("Lancement du jeu de Grundy");
         leJeu();
     }
 
@@ -80,6 +94,7 @@ class GrundyRecBruteEff {
      * @param jeu the table of matchticks
      */
     void displayMatchsticks(ArrayList<Integer> jeu){
+        System.out.println();
         System.out.print("Jeu actuel : ");
 
         for (int i = 0; i < jeu.size(); i++) {
@@ -98,11 +113,12 @@ class GrundyRecBruteEff {
     }
 
     /**
-     * Edit the matchsticks for player
-     * 
-     * @param jeu the table of matchsticks
-     * @param playerName the name of the player
-     */
+	 * Allows the player to modify the number of matchsticks in a pile.
+	 * The player cannot remove all the matchsticks from a pile.
+	 *
+	 * @param jeu List representing the piles of matchsticks.
+	 * @param playerName The player's name.
+	 */
 	void playerEditMatchsticks(ArrayList<Integer> jeu, String playerName) {
 		int line;
 		int nb;
@@ -666,5 +682,267 @@ class GrundyRecBruteEff {
                 n = n + 3;
             }    
     }
+
+	/**
+	 * Test case for displayMatchsticks method
+	 * 
+	 * @param jeu      the input array representing matchsticks
+	 * @param expected the expected string representation of the game
+	 */
+	void testCasDisplayMatchsticks(ArrayList<Integer> jeu, String expected) {
+		System.out.println();
+		System.out.println("Test avec le jeu : " + jeu);
+		System.out.println("Attendu : " + expected);
+		System.out.print("Résultat : ");
+		displayMatchsticks(jeu);
+		System.out.println();
+	}
+		
+	/**
+	 * Test the displayMatchsticks method
+	 */
+	void testDisplayMatchsticks() {
+		System.out.println();
+		System.out.println("*** testDisplayMatchsticks() ***");
+		// Cas 1 : jeu avec plusieurs tas d'allumettes
+		ArrayList<Integer> jeu1 = new ArrayList<>();
+		jeu1.add(3);
+		jeu1.add(5);
+		jeu1.add(2);
+		testCasDisplayMatchsticks(jeu1, "||| et ||||| et ||");
+		
+		// Cas 2 : jeu avec un seul tas
+		ArrayList<Integer> jeu2 = new ArrayList<>();
+		jeu2.add(7);
+		testCasDisplayMatchsticks(jeu2, "|||||||");
+		
+		// Cas 3 : jeu vide
+		ArrayList<Integer> jeu3 = new ArrayList<>();
+		testCasDisplayMatchsticks(jeu3, " ");
+		
+		// Cas 4 : jeu avec un tas vide (0 allumettes)
+		ArrayList<Integer> jeu4 = new ArrayList<>();
+		jeu4.add(0);
+		testCasDisplayMatchsticks(jeu4, " ");
+	}
+
+    /**
+	 * Test case for playerEditMatchsticks
+	 * 
+	 * @param jeu          The initial list of matchstick piles.
+	 * @param playerName   The player's name.
+	 * @param expected     The expected state of the matchstick piles after modification.
+	 */
+	void testCasPlayerEditMatchsticks(ArrayList<Integer> jeu, String playerName, ArrayList<Integer> expected) {
+		System.out.println("\nTest avec le jeu : " + jeu );
+		System.out.println("Attendu : " + expected);
+		
+		playerEditMatchsticks(jeu, playerName);
+		System.out.println("Résultat : " + jeu);
+		System.out.println(expected.equals(jeu) ? "OK " : "ECHEC ");
+		System.out.println();
+	}
+
+	/**
+	 * Test the playerEditMatchsticks method
+	 */
+	void testPlayerEditMatchsticks() {
+		System.out.println();
+		System.out.println("*** testPlayerEditMatchsticks() ***");
+		// Cas 1 : Modification réussie
+		ArrayList<Integer> jeu1 = new ArrayList<>();
+		jeu1.add(5);
+		jeu1.add(8);
+		jeu1.add(3);
+		ArrayList<Integer> res1 = new ArrayList<>();
+		res1.add(5);
+		res1.add(5);
+		res1.add(3);
+		res1.add(3);
+		
+		System.out.println();
+		System.out.println("Cas 1 : Veuillez entrer les valeurs correspondantes (tas = 1, allumettes = 3)");
+		testCasPlayerEditMatchsticks(jeu1, "Joueur 1", res1);
+		// Cas 2 : Tentative sur un tas invalide
+		ArrayList<Integer> jeu2 = new ArrayList<>();
+		jeu2.add(5);
+		jeu2.add(8);
+		jeu2.add(2);
+		ArrayList<Integer> res2 = new ArrayList<>();
+		res2.add(5);
+		res2.add(6);
+		res2.add(2);
+		res2.add(2);
+		
+		System.out.println("Cas 2 : Veuillez entrer les valeur correspondantes ( tas = 2) puis ( tas = 1, allumettes = 2) ");
+		testCasPlayerEditMatchsticks(jeu2, "Joueur 2", res2);
+		// Cas 3 : Tentative de retirer toutes les allumettes (interdit)
+		ArrayList<Integer> jeu3 = new ArrayList<>();
+		jeu3.add(7);
+		jeu3.add(10);
+		ArrayList<Integer> res3 = new ArrayList<>();
+		res3.add(6);
+		res3.add(10);
+		res3.add(1);
+		System.out.println("Cas 3 : Veuillez retirer toutes les allumettes du ( tas = 0) , puis entrer les valeurs correspondantes ( allumettes = 1 )");
+		testCasPlayerEditMatchsticks(jeu3, "Joueur 1", res3);
+		// Cas 4 : Séparation interdite en deux tas égaux
+		ArrayList<Integer> jeu4 = new ArrayList<>();
+		jeu4.add(6);
+		jeu4.add(9);
+		ArrayList<Integer> res4 = new ArrayList<>();
+		res4.add(4);
+		res4.add(9);
+		res4.add(2);
+		
+		System.out.println("Cas 4 : Veuillez prendre le ( tas = 0 ) et le diviser en deux tas égaux, puis entrer les valeurs correspondantes (  allumettes = 2) ");
+		testCasPlayerEditMatchsticks(jeu4, "Joueur 2", res4);
+	}
+
+      
+    /**
+     * Test case for robotEditMatchsticks
+     *
+     * @param jeu          The initial list of matchstick piles.
+     * @param expected     The expected state of the matchstick piles after modification.
+     * @param casErreur	   A variable who check if a situation is an Error case
+     */
+    void testCasRobotEditMatchsticks(ArrayList<Integer> jeu, ArrayList<Integer> expected, boolean casErreur) {
+        System.out.println("\nTest avec le jeu : " + jeu);
+        if (casErreur == false){
+			System.out.println("Attendu : " + expected);
+			robotEditMatchsticks(jeu);
+			System.out.println("Résultat : " + jeu);
+			System.out.println(expected.equals(jeu) ? "OK" : "ECHEC");
+			System.out.println();
+		}
+        else{
+			System.out.println("erreur : robotEditMatchsticks -> situation impossible");
+			System.out.println();
+		}
+    }
+
+    /**
+     * Test the robotEditMatchsticks method
+     */
+    void testRobotEditMatchsticks() {
+        System.out.println();
+        System.out.println("*** testRobotEditMatchsticks() ***");
+        // Cas 1 : Robot performs a winning move
+        ArrayList<Integer> jeu1 = new ArrayList<>();
+        jeu1.add(5);
+        jeu1.add(7);
+        ArrayList<Integer> res1 = new ArrayList<>();
+        res1.add(4);
+        res1.add(7); // Robot removes 1 matchstick to avoid equal piles
+        res1.add(1);
+        System.out.println("Cas 1 : Le robot effectue un mouvement gagnant sur le tas 1 (allumettes = 1)");
+        testCasRobotEditMatchsticks(jeu1, res1, false);
+        // Cas 2 : Robot plays randomly when no winning move is available
+        ArrayList<Integer> jeu2 = new ArrayList<>();
+        jeu2.add(4);
+        jeu2.add(2);
+        jeu2.add(1);
+        ArrayList<Integer> res2 = new ArrayList<>();
+        res2.add(1);
+        res2.add(2);
+        res2.add(1);
+        res2.add(3);
+       
+        
+        System.out.println("Cas 2 : Le robot joue un mouvement aléatoire");
+        testCasRobotEditMatchsticks(jeu2, res2, false);
+        // Cas 3 : Robot plays on the only valid pile
+        ArrayList<Integer> jeu3 = new ArrayList<>();
+        jeu3.add(1);
+        jeu3.add(8);
+        ArrayList<Integer> res3 = new ArrayList<>();
+        res3.add(1);
+        res3.add(7);
+        res3.add(1); // Robot removes 1 matchstick from the second pile
+        System.out.println("Cas 3 : Le robot joue sur le tas 1 avec 1 allumette enlevée");
+        testCasRobotEditMatchsticks(jeu3, res3, false);
+        // Cas 4 : No moves possible for the robot (all piles have <= 2 matchsticks)
+        ArrayList<Integer> jeu4 = new ArrayList<>();
+        jeu4.add(2);
+        jeu4.add(2);
+        ArrayList<Integer> res4 = new ArrayList<>();
+        res4.add(2);
+        res4.add(2); // No change, robot cannot play
+        System.out.println("Cas 4 : Aucun mouvement possible pour le robot");
+        testCasRobotEditMatchsticks(jeu4, res4, true);
+    }
+
+    	 /**
+     * Test case for robotPlayedRandom
+     *
+     * @param jeu          The initial list of matchstick piles.
+     * @param expectedSize The expected number of piles after the robot's move (if a new pile is created).
+     * @param casErreur	   A variable who check if a situation is an Error case
+     */
+    void testCasRobotPlayedRandom(ArrayList<Integer> jeu, int expectedSize, boolean casErreur) {
+        if (casErreur == false){
+			System.out.println("\nTest avec le jeu : " + jeu);
+			System.out.println("Taille attendue après coup du robot : " + expectedSize);
+			robotPlayedRandom(jeu);
+			System.out.println("Résultat après coup du robot : " + jeu);
+			System.out.println(jeu.size() == expectedSize ? "OK" : "ECHEC");
+			System.out.println();
+		}
+        else {
+			System.out.println("erreur : robotPlayedRandom -> situation impossible");
+			System.out.println();
+		}
+        
+    }
+
+    /**
+     * Test the robotPlayedRandom method
+     */
+    void testRobotPlayedRandom() {
+        System.out.println();
+        System.out.println("*** testRobotPlayedRandom() ***");
+        // Cas 1 : Robot removes matchsticks from a valid pile
+        ArrayList<Integer> jeu1 = new ArrayList<>();
+        jeu1.add(5);
+        jeu1.add(8);
+        jeu1.add(3);
+        int expectedSize1 = 4;
+        System.out.println("Cas 1 : Le robot joue sur un tas valide (pas de tas supprimé)");
+        testCasRobotPlayedRandom(jeu1, expectedSize1, false);
+        // Cas 2 : Robot avoids piles with 2 or fewer matchsticks
+        ArrayList<Integer> jeu2 = new ArrayList<>();
+        jeu2.add(2);
+        jeu2.add(9);
+        jeu2.add(1);
+        int expectedSize2 = 4; 
+        
+        System.out.println("Cas 2 : Le robot évite les tas avec 2 allumettes ou moins");
+        testCasRobotPlayedRandom(jeu2, expectedSize2, false);
+        // Cas 3 : Robot avoids splitting a pile into two equal parts
+        ArrayList<Integer> jeu3 = new ArrayList<>();
+        jeu3.add(10);
+        jeu3.add(5);
+        int expectedSize3 = 3; 
+        System.out.println("Cas 3 : Le robot évite de diviser un tas en deux parties égales");
+        testCasRobotPlayedRandom(jeu3, expectedSize3, false);
+        // Cas 4 : Robot plays on the only valid pile
+        ArrayList<Integer> jeu4 = new ArrayList<>();
+        jeu4.add(1);
+        jeu4.add(2);
+        jeu4.add(6);
+        int expectedSize4 = 4; 
+        System.out.println("Cas 4 : Le robot joue sur le seul tas valide");
+        testCasRobotPlayedRandom(jeu4, expectedSize4, false);
+        // Cas 5 : No valid moves (all piles have <= 2 matchsticks)
+        ArrayList<Integer> jeu5 = new ArrayList<>();
+        jeu5.add(2);
+        jeu5.add(1);
+        jeu5.add(2);
+        int expectedSize5 = 3; // No changes occur
+        System.out.println("Cas 5 : Aucun mouvement valide possible");
+        testCasRobotPlayedRandom(jeu5, expectedSize5, true);
+    }
+
 
 }
