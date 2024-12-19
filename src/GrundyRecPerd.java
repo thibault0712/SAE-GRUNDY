@@ -2,13 +2,13 @@ import java.util.ArrayList;
 
 /**
  * Grundy Game with AI for the machine
- * This program is an update of grundyRecPerd, we have added a new Arraylist to store winning positions
- * This version is faster than the previous one because it uses a list of known wining positions
+ * This program is an update of grundyRecBruteEff, we have added a new Arraylist to store loosing positions
+ * This version is faster than the previous one because it uses a list of known losing positions
  *
  * @author J-F. Kamp, C. Tibermacine, T. FALEZAN, J. MAILLARD
  */
 
-class GrundyRecPerdEtGagn {
+class GrundyRecPerd {
 
     /**
      * Compter per minute to obtain the complexity
@@ -19,11 +19,6 @@ class GrundyRecPerdEtGagn {
      * List of known losing positions
      */
     ArrayList<ArrayList<Integer>> posPerdantes = new ArrayList<ArrayList<Integer>>();
-
-    /**
-     * List of known losing positions
-     */
-    ArrayList<ArrayList<Integer>> posGagnantes = new ArrayList<ArrayList<Integer>>();
 
     /**
      * Principal method
@@ -48,8 +43,6 @@ class GrundyRecPerdEtGagn {
 		System.out.println("------------------------------------------");
         testEstConnuePerdante();
 		System.out.println("------------------------------------------");
-        testEstConnueGagnante();
-        System.out.println("------------------------------------------");
 		System.out.println();
         System.out.println("Test d'efficacités");
         testEstGagnanteEfficacite();
@@ -276,8 +269,6 @@ class GrundyRecPerdEtGagn {
             System.err.println("estPerdante(): le paramètre jeu est null");
         }else if(estConnuePerdante(jeu)){
             ret = true;
-        }else if(estConnueGagnante(jeu)){
-            ret = false;
         }else{
             // if there are only piles of 1 or 2 matchsticks left on the game board
             // then the situation is necessarily losing (ret=true) = END of recursion
@@ -320,8 +311,6 @@ class GrundyRecPerdEtGagn {
 
         if(ret && !estConnuePerdante(gameSorted) && estPossible(gameSorted)){ 
             posPerdantes.add(gameSorted);
-        }else if(!ret && !estConnueGagnante(gameSorted) && estPossible(gameSorted)){
-            posGagnantes.add(gameSorted);
         }
 
         return ret;
@@ -349,28 +338,6 @@ class GrundyRecPerdEtGagn {
 
         return ret;
     }
-
-    /**
-     * Indicates if the configuration is know as wining.
-     * @param jeu game board
-     * @return true if the configuration is losing, false otherwise
-     */
-    boolean estConnueGagnante(ArrayList<Integer> jeu) {
-        boolean ret = false;
-        int i = 0;
-        ArrayList<Integer> gameSorted = sortGame(jeu);
-        
-        while (i < posGagnantes.size() && !ret) {
-            if (posGagnantes.get(i).equals(gameSorted)) {
-                ret = true;
-            }
-            i = i + 1;
-        }
-
-        return ret;
-    }
-
-    //TODO test methode
 
     /**
      * Sort the game board by ascending order and remove the piles with 1 or 2 matchsticks.
@@ -481,7 +448,7 @@ class GrundyRecPerdEtGagn {
             System.err.println("enlever() : le nb d'allumettes à retirer est la moitié");
         } else {
             // new pile added to the game (necessarily at the end of the list)
-            // this new pile contains the number of matchsticks removed (nb) from the pile to be split		
+            // this new pile contains the number of matchsticks removed (nb) from the pile to be split
             jeu.add(nb);
             // the remaining pile has "nb" fewer matchsticks
             jeu.set ( ligne, (jeu.get(ligne) - nb) );
@@ -674,7 +641,6 @@ class GrundyRecPerdEtGagn {
     /**
      * Test the method suivant()
      */
-    //TODO add comments
     void testSuivant() {
         System.out.println();
         System.out.println("*** testSuivant() ****");
@@ -761,7 +727,6 @@ class GrundyRecPerdEtGagn {
     
             for ( int i = 1; i <= 5; i++ ) {
                 posPerdantes.clear();
-                posGagnantes.clear();
                 jeu = new ArrayList<Integer>();
                 jeu.add(n);
                 cpt = 0;
@@ -823,7 +788,6 @@ class GrundyRecPerdEtGagn {
 		jeu4.add(0);
 		testCasDisplayMatchsticks(jeu4, " ");
 	}
-
     /**
 	 * Test case for playerEditMatchsticks
 	 * 
@@ -873,7 +837,7 @@ class GrundyRecPerdEtGagn {
 		res2.add(2);
 		System.out.println("Cas 2 : Veuillez entrer les valeur correspondantes ( tas = 2) puis ( tas = 1, allumettes = 2) ");
 		testCasPlayerEditMatchsticks(jeu2, "Joueur 2", res2);
-        
+
         // Case 3: Attempt to remove all matchsticks (forbidden)
 		ArrayList<Integer> jeu3 = new ArrayList<>();
 		jeu3.add(7);
@@ -884,7 +848,7 @@ class GrundyRecPerdEtGagn {
 		res3.add(1);
 		System.out.println("Cas 3 : Veuillez retirer toutes les allumettes du ( tas = 0) , puis entrer les valeurs correspondantes ( allumettes = 1 )");
 		testCasPlayerEditMatchsticks(jeu3, "Joueur 1", res3);
-        
+
         // Case 4: Forbidden separation into two equal piles
 		ArrayList<Integer> jeu4 = new ArrayList<>();
 		jeu4.add(6);
@@ -988,7 +952,8 @@ class GrundyRecPerdEtGagn {
 			System.out.println("Résultat après coup du robot : " + jeu);
 			System.out.println(jeu.size() == expectedSize ? "OK" : "ECHEC");
 			System.out.println();
-		} else {
+		}
+        else {
 			System.out.println("erreur : robotPlayedRandom -> situation impossible");
 			System.out.println();
 		}
@@ -1001,6 +966,7 @@ class GrundyRecPerdEtGagn {
     void testRobotPlayedRandom() {
         System.out.println();
         System.out.println("*** testRobotPlayedRandom() ***");
+
         // Case 1 : Robot removes matchsticks from a valid pile
         ArrayList<Integer> jeu1 = new ArrayList<>();
         jeu1.add(5);
@@ -1090,50 +1056,6 @@ class GrundyRecPerdEtGagn {
         jeu1.add(7);
         posPerdantes.clear();
         testCasEstConnuePerdante(jeu2, false);
-    }
-
-    /**
-     * Test a case of the method estConnueGagnante
-     * @param jeu the game board
-     * @param result the expected result
-     */
-    void testCasEstconnueGagnante(ArrayList<Integer> jeu, boolean result){
-        // Arrange
-        System.out.print("estConnueGagnante (" + jeu.toString() + ") : ");
-        // Act
-        boolean resExec = estConnueGagnante(jeu);
-        // Assert
-        System.out.print(resExec);
-        if (result == resExec) {
-            System.out.println(" -> OK");
-        } else {
-            System.err.println(" -> ERREUR");
-        }
-    }
-
-    /**
-     * Test the method estConnueGagnante
-     */
-    void testEstConnueGagnante(){
-        System.out.println();
-        System.out.println("*** testEstConnueGagnante() ***");
-
-        System.out.println("Test des cas normaux");
-
-        //Case 1 : the game board is known as winning
-        ArrayList<Integer> jeu1 = new ArrayList<Integer>();
-        jeu1.add(4);
-        jeu1.add(6);
-        posGagnantes.clear();
-        posGagnantes.add(jeu1);
-        testCasEstconnueGagnante(jeu1, true);
-
-        //Case 2 : the game board is not known as winning
-        ArrayList<Integer> jeu2 = new ArrayList<Integer>();
-        jeu1.add(5);
-        jeu1.add(7);
-        posGagnantes.clear();
-        testCasEstconnueGagnante(jeu2, false);
     }
 
     /**

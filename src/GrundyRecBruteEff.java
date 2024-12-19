@@ -179,21 +179,21 @@ class GrundyRecBruteEff {
 	 * @param jeu List representing the piles of matchsticks.
 	 */
 	void robotPlayedRandom(ArrayList<Integer> jeu) {
-		int line; // Index du tas sélectionné
-		int nb;   // Nombre d'allumettes à retirer
+        int line; // Index of the selected pile
+        int nb;   // Number of matchsticks to remove
 
 		System.out.println();
 		System.out.println("Robot -> en train de jouer (choix aléatoire)");
 
 		do {
-			line = (int) (Math.random() * jeu.size()); // Sélection d'un tas au hasard
-		} while (jeu.get(line) <= 2); // Ignorer les tas contenant 2 allumettes ou moins
+            line = (int) (Math.random() * jeu.size()); // Select a random pile
+		} while (jeu.get(line) <= 2); // Ignore the pile wich has 2 matchsticks or less
 
 		do {
-			nb = (int) (Math.random() * (jeu.get(line) - 1)) + 1; // Retirer entre 1 et (taille du tas - 1)
-		} while (nb == jeu.get(line) / 2); // Éviter de diviser le tas en deux parties égales
+            nb = (int) (Math.random() * (jeu.get(line) - 1)) + 1; // Remove between 1 and (pile size - 1)
+		} while (nb == jeu.get(line) / 2); // Avoid splitting the pile into two equal parts
 
-		enlever(jeu, line, nb); // Mise à jour du jeu
+		enlever(jeu, line, nb); // Update the game board
 		System.out.println("Robot a retiré " + nb + " allumette(s) du tas " + line + ".");
 	}
 	
@@ -212,31 +212,31 @@ class GrundyRecBruteEff {
         } else {
             ArrayList<Integer> essai = new ArrayList<Integer>();
 			
-			// Une toute première décomposition est effectuée à partir de jeu.
-			// Cette première décomposition du jeu est enregistrée dans essai.
-			// ligne est le numéro de la case du tableau ArrayList (qui commence à zéro) qui
-			// mémorise le tas (nbre d'allumettes) qui a été décomposé
+            // A very first decomposition is performed from the game.
+            // This first decomposition of the game is recorded in essai.
+            // ligne is the index of the ArrayList (starting from zero) that
+            // stores the pile (number of matchsticks) that has been decomposed
             int ligne = premier(jeu, essai);
 			
-			// mise en oeuvre de la règle numéro2
-			// Une situation (ou position) est dite gagnante pour la machine, s’il existe AU MOINS UNE décomposition
-			// (c-à-d UNE action qui consiste à décomposer un tas en 2 tas inégaux) perdante pour l’adversaire. C'est
-			// évidemment cette décomposition perdante qui sera choisie par la machine.
+            // implementation of rule number 2
+            // A situation (or position) is said to be winning for the machine if there exists AT LEAST ONE decomposition
+            // (i.e., ONE action that consists of decomposing a pile into 2 unequal piles) that is losing for the opponent. 
+            // This losing decomposition will obviously be chosen by the machine.
             while (ligne != -1 && !gagnant) {
-				// estPerdante est récursif
+                // estPerdante is recursive
                 if (estPerdante(essai)) {
-					// estPerdante (pour l'adversaire) à true ===> Bingo essai est la décomposition choisie par la machine qui est alors
-					// certaine de gagner !!
+                    // estPerdante (for the opponent) is true ===> Bingo essai is the decomposition chosen by the machine which is then
+                    // certain to win !!
                     jeu.clear();
                     gagnant = true;
-					// essai est recopié dans jeu car essai est la nouvelle situation de jeu après que la machine ait joué (gagnant)
+                    // essai is copied into jeu because essai is the new game situation after the machine has played (winning)
                     for (int i = 0; i < essai.size(); i++) {
                         jeu.add(essai.get(i));
                     }
                 } else {
-					// estPerdante à false ===> la machine essaye une autre décomposition en faisant appel à "suivant".
-					// Si, après exécution de suivant, ligne est à (-1) alors il n'y a plus de décomposition possible à partir de jeu (et on sort du while).
-					// En d'autres mots : la machine n'a PAS trouvé à partir de jeu UNE décomposition gagnante.
+                    // estPerdante is false ===> the machine tries another decomposition by calling "suivant".
+                    // If, after executing suivant, ligne is (-1) then there are no more possible decompositions from jeu (and we exit the while loop).
+                    // In other words: the machine has NOT found a winning decomposition from jeu.
                     ligne = suivant(jeu, essai, ligne);
                 }
             }
@@ -254,43 +254,42 @@ class GrundyRecBruteEff {
      */
     boolean estPerdante(ArrayList<Integer> jeu) {
 	
-        boolean ret = true; // par défaut la configuration est perdante
+        boolean ret = true; // By default the configuration is losing 
 		
         if (jeu == null) {
             System.err.println("estPerdante(): le paramètre jeu est null");
         }else {
-			// si il n'y a plus que des tas de 1 ou 2 allumettes dans le plateau de jeu
-			// alors la situation est forcément perdante (ret=true) = FIN de la récursivité
+            // if there are only piles of 1 or 2 matchsticks left on the game board
+            // then the situation is necessarily losing (ret=true) = END of recursion
             if ( !estPossible(jeu) ) {
                 ret = true;
             }else {
-				// création d'un jeu d'essais qui va examiner toutes les décompositions
-				// possibles à partir de jeu
+                // creation of a trial game that will examine all possible decompositions
+                // starting from the current game
                 ArrayList<Integer> essai = new ArrayList<Integer>(); // size = 0 !
 				
-				// toute première décomposition : enlever 1 allumette au premier tas qui possède
-				// au moins 3 allumettes, ligne = -1 signifie qu'il n'y a plus de tas d'au moins 3 allumettes
+                // first decomposition: remove 1 matchstick from the first pile that has
+                // at least 3 matchsticks, ligne = -1 means there are no more piles with at least 3 matchsticks
                 int ligne = premier(jeu, essai);
 				
                 while ( (ligne != -1) && ret) {
-				
-					// mise en oeuvre de la règle numéro1
-					// Une situation (ou position) est dite perdante si et seulement si TOUTES ses décompositions possibles
-					// (c-à-d TOUTES les actions qui consistent à décomposer un tas en 2 tas inégaux) sont TOUTES gagnantes 
-					// (pour l’adversaire).
-					// L'appel à "estPerdante" est RECURSIF.
-					
-					// Si "estPerdante(essai)" est true c'est équivalent à "estGagnante" est false, la décomposition
-					// essai n'est donc pas gagnante, on sort du while et on renvoie false.
+                    // Implementation of rule number 1
+                    // A situation (or position) is said to be losing if and only if ALL its possible decompositions
+                    // (i.e., ALL actions that consist of decomposing a pile into 2 unequal piles) are ALL winning
+                    // (for the opponent).
+                    // The call to "estPerdante" is RECURSIVE.
+                    
+                    // If "estPerdante(essai)" is true, it is equivalent to "estGagnante" being false, so the decomposition
+                    // essai is not winning, we exit the while loop and return false.
                     if (estPerdante(essai) == true) {
 					
-						// Si UNE SEULE décomposition (à partir du jeu) est perdante (pour l'adversaire) alors le jeu n'EST PAS perdant.
-						// On renverra donc false : la situation (jeu) n'est PAS perdante.
+                        // If ANY decomposition (from the game) is losing (for the opponent), then the game is NOT losing.
+                        // Therefore, we will return false: the situation (game) is NOT losing.
                         ret = false;
 						
                     } else {
-						// génère la configuration d'essai suivante (c'est-à-dire UNE décomposition possible)
-						// à partir du jeu, si ligne = -1 il n'y a plus de décomposition possible
+                        // generates the next trial configuration (i.e., a possible decomposition)
+                        // from the game, if ligne = -1 there are no more possible decompositions
                         ligne = suivant(jeu, essai, ligne);
                     }
 
@@ -371,7 +370,7 @@ class GrundyRecBruteEff {
      * @param nb    number of matchsticks REMOVED from the pile (line) during the split
      */
     void enlever ( ArrayList<Integer> jeu, int ligne, int nb ) {
-		// traitement des erreurs
+        // error handling
         if (jeu == null) {
             System.err.println("enlever() : le paramètre jeu est null");
         } else if (ligne >= jeu.size()) {
@@ -383,10 +382,10 @@ class GrundyRecBruteEff {
         } else if (2 * nb == jeu.get(ligne)) {
             System.err.println("enlever() : le nb d'allumettes à retirer est la moitié");
         } else {
-			// nouveau tas ajouté au jeu (nécessairement en fin de tableau)
-			// ce nouveau tas contient le nbre d'allumettes retirées (nb) du tas à séparer			
+            // new pile added to the game (necessarily at the end of the list)
+            // this new pile contains the number of matchsticks removed (nb) from the pile to be split		
             jeu.add(nb);
-			// le tas restant possède "nb" allumettes en moins
+            // the remaining pile has "nb" fewer matchsticks
             jeu.set ( ligne, (jeu.get(ligne) - nb) );
         }
     }
@@ -422,7 +421,7 @@ class GrundyRecBruteEff {
      */
     int premier(ArrayList<Integer> jeu, ArrayList<Integer> jeuEssai) {
 	
-        int numTas = -1; // pas de tas à séparer par défaut
+        int numTas = -1; // no pile to split by default
 		int i;
 		
         if (jeu == null) {
@@ -432,7 +431,7 @@ class GrundyRecBruteEff {
         } else if (jeuEssai == null) {
             System.err.println("premier(): le paramètre jeuEssai est null");
         } else {
-            // avant la copie du jeu dans jeuEssai il y a un reset de jeuEssai 
+            // before copying the game into jeuEssai, there is a reset of jeuEssai
             jeuEssai.clear(); // size = 0
             i = 0;
 			
@@ -516,9 +515,7 @@ class GrundyRecBruteEff {
      * @return the number of the pile divided into two for the new configuration, -1 if no further decomposition is possible
      */
     int suivant(ArrayList<Integer> jeu, ArrayList<Integer> jeuEssai, int ligne) {
-	
-        // System.out.println("suivant(" + jeu.toString() + ", " +jeuEssai.toString() + ", " + ligne + ") = ");
-		
+			
         int numTas = -1; // by default there is no further decomposition possible
 		
         int i = 0;
@@ -556,7 +553,7 @@ class GrundyRecBruteEff {
                 }
 				
                 boolean separation = false;
-                i = ligne + 1; // tas suivant
+                i = ligne + 1; // next pile
                 // if there is still a pile and it contains at least 3 matchsticks
                 // then we perform an initial split by removing 1 matchstick
                 while ( i < jeuEssai.size() && !separation ) {
@@ -623,7 +620,6 @@ class GrundyRecBruteEff {
         res3.add(3);
         res3.add(2);
         testCasSuivant(jeu3, jeuEssai3, ligne3, res3, resLigne3);
-
     }
 
     /**
@@ -704,23 +700,23 @@ class GrundyRecBruteEff {
 	void testDisplayMatchsticks() {
 		System.out.println();
 		System.out.println("*** testDisplayMatchsticks() ***");
-		// Cas 1 : jeu avec plusieurs tas d'allumettes
+        // Case 1: game with multiple piles of matchsticks
 		ArrayList<Integer> jeu1 = new ArrayList<>();
 		jeu1.add(3);
 		jeu1.add(5);
 		jeu1.add(2);
 		testCasDisplayMatchsticks(jeu1, "||| et ||||| et ||");
 		
-		// Cas 2 : jeu avec un seul tas
+        // Case 2: game with a single pile
 		ArrayList<Integer> jeu2 = new ArrayList<>();
 		jeu2.add(7);
 		testCasDisplayMatchsticks(jeu2, "|||||||");
 		
-		// Cas 3 : jeu vide
+        // Case 3: empty game
 		ArrayList<Integer> jeu3 = new ArrayList<>();
 		testCasDisplayMatchsticks(jeu3, " ");
 		
-		// Cas 4 : jeu avec un tas vide (0 allumettes)
+        // Case 4: game with an empty pile (0 matchsticks)
 		ArrayList<Integer> jeu4 = new ArrayList<>();
 		jeu4.add(0);
 		testCasDisplayMatchsticks(jeu4, " ");
@@ -749,7 +745,7 @@ class GrundyRecBruteEff {
 	void testPlayerEditMatchsticks() {
 		System.out.println();
 		System.out.println("*** testPlayerEditMatchsticks() ***");
-		// Cas 1 : Modification réussie
+        // Case 1: Successful modification
 		ArrayList<Integer> jeu1 = new ArrayList<>();
 		jeu1.add(5);
 		jeu1.add(8);
@@ -759,11 +755,11 @@ class GrundyRecBruteEff {
 		res1.add(5);
 		res1.add(3);
 		res1.add(3);
-		
 		System.out.println();
 		System.out.println("Cas 1 : Veuillez entrer les valeurs correspondantes (tas = 1, allumettes = 3)");
 		testCasPlayerEditMatchsticks(jeu1, "Joueur 1", res1);
-		// Cas 2 : Tentative sur un tas invalide
+
+        // Case 2: Attempt on an invalid pile
 		ArrayList<Integer> jeu2 = new ArrayList<>();
 		jeu2.add(5);
 		jeu2.add(8);
@@ -773,10 +769,10 @@ class GrundyRecBruteEff {
 		res2.add(6);
 		res2.add(2);
 		res2.add(2);
-		
 		System.out.println("Cas 2 : Veuillez entrer les valeur correspondantes ( tas = 2) puis ( tas = 1, allumettes = 2) ");
 		testCasPlayerEditMatchsticks(jeu2, "Joueur 2", res2);
-		// Cas 3 : Tentative de retirer toutes les allumettes (interdit)
+        
+        // Case 3: Attempt to remove all matchsticks (forbidden)
 		ArrayList<Integer> jeu3 = new ArrayList<>();
 		jeu3.add(7);
 		jeu3.add(10);
@@ -786,7 +782,8 @@ class GrundyRecBruteEff {
 		res3.add(1);
 		System.out.println("Cas 3 : Veuillez retirer toutes les allumettes du ( tas = 0) , puis entrer les valeurs correspondantes ( allumettes = 1 )");
 		testCasPlayerEditMatchsticks(jeu3, "Joueur 1", res3);
-		// Cas 4 : Séparation interdite en deux tas égaux
+        
+        // Case 4: Forbidden separation into two equal piles
 		ArrayList<Integer> jeu4 = new ArrayList<>();
 		jeu4.add(6);
 		jeu4.add(9);
@@ -794,7 +791,6 @@ class GrundyRecBruteEff {
 		res4.add(4);
 		res4.add(9);
 		res4.add(2);
-		
 		System.out.println("Cas 4 : Veuillez prendre le ( tas = 0 ) et le diviser en deux tas égaux, puis entrer les valeurs correspondantes (  allumettes = 2) ");
 		testCasPlayerEditMatchsticks(jeu4, "Joueur 2", res4);
 	}
@@ -828,7 +824,8 @@ class GrundyRecBruteEff {
     void testRobotEditMatchsticks() {
         System.out.println();
         System.out.println("*** testRobotEditMatchsticks() ***");
-        // Cas 1 : Robot performs a winning move
+
+        // Case 1 : Robot performs a winning move
         ArrayList<Integer> jeu1 = new ArrayList<>();
         jeu1.add(5);
         jeu1.add(7);
@@ -838,7 +835,8 @@ class GrundyRecBruteEff {
         res1.add(1);
         System.out.println("Cas 1 : Le robot effectue un mouvement gagnant sur le tas 1 (allumettes = 1)");
         testCasRobotEditMatchsticks(jeu1, res1, false);
-        // Cas 2 : Robot plays randomly when no winning move is available
+
+        // Case 2 : Robot plays randomly when no winning move is available
         ArrayList<Integer> jeu2 = new ArrayList<>();
         jeu2.add(4);
         jeu2.add(2);
@@ -848,11 +846,10 @@ class GrundyRecBruteEff {
         res2.add(2);
         res2.add(1);
         res2.add(3);
-       
-        
         System.out.println("Cas 2 : Le robot joue un mouvement aléatoire");
         testCasRobotEditMatchsticks(jeu2, res2, false);
-        // Cas 3 : Robot plays on the only valid pile
+
+        // Case 3 : Robot plays on the only valid pile
         ArrayList<Integer> jeu3 = new ArrayList<>();
         jeu3.add(1);
         jeu3.add(8);
@@ -862,7 +859,8 @@ class GrundyRecBruteEff {
         res3.add(1); // Robot removes 1 matchstick from the second pile
         System.out.println("Cas 3 : Le robot joue sur le tas 1 avec 1 allumette enlevée");
         testCasRobotEditMatchsticks(jeu3, res3, false);
-        // Cas 4 : No moves possible for the robot (all piles have <= 2 matchsticks)
+
+        // Case 4 : No moves possible for the robot (all piles have <= 2 matchsticks)
         ArrayList<Integer> jeu4 = new ArrayList<>();
         jeu4.add(2);
         jeu4.add(2);
@@ -902,7 +900,8 @@ class GrundyRecBruteEff {
     void testRobotPlayedRandom() {
         System.out.println();
         System.out.println("*** testRobotPlayedRandom() ***");
-        // Cas 1 : Robot removes matchsticks from a valid pile
+
+        // Case 1 : Robot removes matchsticks from a valid pile
         ArrayList<Integer> jeu1 = new ArrayList<>();
         jeu1.add(5);
         jeu1.add(8);
@@ -910,23 +909,25 @@ class GrundyRecBruteEff {
         int expectedSize1 = 4;
         System.out.println("Cas 1 : Le robot joue sur un tas valide (pas de tas supprimé)");
         testCasRobotPlayedRandom(jeu1, expectedSize1, false);
-        // Cas 2 : Robot avoids piles with 2 or fewer matchsticks
+
+        // Case 2 : Robot avoids piles with 2 or fewer matchsticks
         ArrayList<Integer> jeu2 = new ArrayList<>();
         jeu2.add(2);
         jeu2.add(9);
         jeu2.add(1);
         int expectedSize2 = 4; 
-        
         System.out.println("Cas 2 : Le robot évite les tas avec 2 allumettes ou moins");
         testCasRobotPlayedRandom(jeu2, expectedSize2, false);
-        // Cas 3 : Robot avoids splitting a pile into two equal parts
+
+        // Case 3 : Robot avoids splitting a pile into two equal parts
         ArrayList<Integer> jeu3 = new ArrayList<>();
         jeu3.add(10);
         jeu3.add(5);
         int expectedSize3 = 3; 
         System.out.println("Cas 3 : Le robot évite de diviser un tas en deux parties égales");
         testCasRobotPlayedRandom(jeu3, expectedSize3, false);
-        // Cas 4 : Robot plays on the only valid pile
+
+        // Case 4 : Robot plays on the only valid pile
         ArrayList<Integer> jeu4 = new ArrayList<>();
         jeu4.add(1);
         jeu4.add(2);
@@ -934,7 +935,8 @@ class GrundyRecBruteEff {
         int expectedSize4 = 4; 
         System.out.println("Cas 4 : Le robot joue sur le seul tas valide");
         testCasRobotPlayedRandom(jeu4, expectedSize4, false);
-        // Cas 5 : No valid moves (all piles have <= 2 matchsticks)
+        
+        // Case 5 : No valid moves (all piles have <= 2 matchsticks)
         ArrayList<Integer> jeu5 = new ArrayList<>();
         jeu5.add(2);
         jeu5.add(1);
