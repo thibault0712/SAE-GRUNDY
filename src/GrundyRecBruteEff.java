@@ -659,7 +659,7 @@ class GrundyRecBruteEff {
     
             System.out.println("\n\t\t Test de l'efficacité estGagnante\n");
     
-            for ( int i = 1; i <= 5; i++ ) {
+            for ( int i = 1; i <= 16; i++ ) {
                 jeu = new ArrayList<Integer>();
                 jeu.add(n);
                 cpt = 0;
@@ -675,7 +675,7 @@ class GrundyRecBruteEff {
                 System.out.println ( "Cpt = " + cpt );
                 System.out.println ( "Tps = " + diffT + " ms" );
     
-                n = n + 3;
+                n = n + 1;
             }    
     }
 
