@@ -29,7 +29,7 @@ class GrundyRecPerdEtGagn {
      * Principal method
      */
     void principal() {
-		System.out.println("------------------------------------------");
+		/*System.out.println("------------------------------------------");
         testJouerGagnant();
         System.out.println("------------------------------------------");
 		testPremier();
@@ -50,7 +50,7 @@ class GrundyRecPerdEtGagn {
 		System.out.println("------------------------------------------");
         testEstConnueGagnante();
         System.out.println("------------------------------------------");
-		System.out.println();
+		System.out.println();*/
         System.out.println("Test d'efficacités");
         testEstGagnanteEfficacite();
 		
@@ -759,7 +759,7 @@ class GrundyRecPerdEtGagn {
     
             System.out.println("\n\t\t Test de l'efficacité estGagnante\n");
     
-            for ( int i = 1; i <= 5; i++ ) {
+            for ( int i = 1; i <= 50; i++ ) {
                 posPerdantes.clear();
                 posGagnantes.clear();
                 jeu = new ArrayList<Integer>();
@@ -777,7 +777,7 @@ class GrundyRecPerdEtGagn {
                 System.out.println ( "Cpt = " + cpt );
                 System.out.println ( "Tps = " + diffT + " ms" );
     
-                n = n + 3;
+                n = n + 1;
             }    
     }
 
