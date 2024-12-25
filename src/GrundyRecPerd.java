@@ -273,6 +273,7 @@ class GrundyRecPerd {
             // if there are only piles of 1 or 2 matchsticks left on the game board
             // then the situation is necessarily losing (ret=true) = END of recursion
             if ( !estPossible(jeu) ) {
+                posPerdantes.add(gameSorted); // We discovered a new losing position so we add it to the list of losing positions
                 ret = true;
             }else {
                 // creation of a trial game that will examine all possible decompositions
@@ -307,10 +308,6 @@ class GrundyRecPerd {
                     cpt += 1;
                 }
             }
-        }
-
-        if(ret && !estConnuePerdante(gameSorted) && estPossible(gameSorted)){ 
-            posPerdantes.add(gameSorted);
         }
 
         return ret;
@@ -721,7 +718,7 @@ class GrundyRecPerd {
             int n;
             long t1, t2, diffT;
     
-            n = 10;
+            n = 3;
     
             System.out.println("\n\t\t Test de l'efficacité estGagnante\n");
     

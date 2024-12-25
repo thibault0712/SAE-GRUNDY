@@ -5,3 +5,7 @@
  - Traduire les jeu en game ? 
 
  - Ne pas oublier de mettre à jour les test d'efficacités ! 
+
+ - Remttre en forme les test 
+
+ - Mettre tous les n = 3 pour efficacité

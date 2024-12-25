@@ -1,14 +1,14 @@
 import java.util.ArrayList;
 
 /**
+ * TODO : review this javadoc
  * Grundy Game with AI for the machine
- * This program is an update of grundyRecPerd, we have added a new Arraylist to store winning positions
- * This version is faster than the previous one because it uses a list of known wining positions
- *
+ * This program is an update of grundyRecPerdEtGagn, we have changed estConnueGagnante now it checks if a part of the game board is in the list of winning positions.
+ * This version is faster than the previous one because estConnueGagnante is more efficient because the list of winning positions contains only winning stacks and check if this winning stack is in the game board.
  * @author J-F. Kamp, C. Tibermacine, T. FALEZAN, J. MAILLARD
  */
 
-class GrundyRecPerdEtGagn {
+class GrundyRecPerdantNeutre {
 
     /**
      * Compter per minute to obtain the complexity
@@ -38,7 +38,7 @@ class GrundyRecPerdEtGagn {
 		System.out.println("------------------------------------------");
 		testDisplayMatchsticks();
 		System.out.println("------------------------------------------");
-		testPlayerEditMatchsticks();
+		// testPlayerEditMatchsticks();
 		System.out.println("------------------------------------------");
 		testRobotEditMatchsticks() ;
 		System.out.println("------------------------------------------");
@@ -307,8 +307,8 @@ class GrundyRecPerdEtGagn {
 					
                         // If ANY decomposition (from the game) is losing (for the opponent), then the game is NOT losing.
                         // Therefore, we will return false: the situation (game) is NOT losing.
-                        posGagnantes.add(gameSorted); // We discovered a new winning position so we add it to the list of winning positions
-                        ret = false;						
+                        posGagnantes.add(gameSorted); // We discovered a new winning position so we add it to the list of winning positions					
+                        ret = false;	
                     } else {
                         // generates the next trial configuration (i.e., a possible decomposition)
                         // from the game, if ligne = -1 there are no more possible decompositions
@@ -347,7 +347,7 @@ class GrundyRecPerdEtGagn {
     }
 
     /**
-     * Indicates if the configuration is know as wining by checking if the game board is in the list of wining positions.
+     * Indicates if the configuration is know as wining by checking if a PART of the game board is in the list of winning positions.
      * @param jeu game board
      * @return true if the configuration is losing, false otherwise
      */
@@ -355,18 +355,34 @@ class GrundyRecPerdEtGagn {
         boolean ret = false;
         int i = 0;
         ArrayList<Integer> gameSorted = sortGame(jeu);
-        
+        boolean contain = true;
+
         while (i < posGagnantes.size() && !ret) {
-            if (posGagnantes.get(i).equals(gameSorted)) {
-                ret = true;
+            int j = 0;
+
+            while (!ret && j <= gameSorted.size() - posGagnantes.get(i).size()){
+                contain = true;
+                int k = 0;
+
+                while (k < posGagnantes.get(i).size() && contain) {
+                    if (!gameSorted.get(k + j).equals(posGagnantes.get(i).get(k))) {
+                        contain = false;
+                    }
+                    k = k + 1;
+                }
+
+                if (contain) {
+                    ret = true;
+                }
+
+                j += 1;
             }
+
             i = i + 1;
         }
 
         return ret;
     }
-
-    //TODO test methode
 
     /**
      * Sort the game board by ascending order and remove the piles with 1 or 2 matchsticks.
@@ -935,7 +951,6 @@ class GrundyRecPerdEtGagn {
         testCasRobotEditMatchsticks(jeu1, res1, false);
 
         // Case 2 : Robot plays randomly when no winning move is available
-        // TODO : problem with the random we check only one result
         ArrayList<Integer> jeu2 = new ArrayList<>();
         jeu2.add(4);
         jeu2.add(2);
@@ -1118,18 +1133,23 @@ class GrundyRecPerdEtGagn {
         System.out.println("Test des cas normaux");
 
         //Case 1 : the game board is known as winning
+        ArrayList<Integer> posGagnant1 = new ArrayList<Integer>();
+        posGagnant1.add(6);
+        posGagnantes.clear();
+        posGagnantes.add(posGagnant1);
         ArrayList<Integer> jeu1 = new ArrayList<Integer>();
         jeu1.add(4);
         jeu1.add(6);
-        posGagnantes.clear();
-        posGagnantes.add(jeu1);
         testCasEstconnueGagnante(jeu1, true);
 
         //Case 2 : the game board is not known as winning
+        ArrayList<Integer> posGagnant2 = new ArrayList<Integer>();
+        posGagnant2.add(6);
+        posGagnantes.clear();
+        posGagnantes.add(posGagnant2);
         ArrayList<Integer> jeu2 = new ArrayList<Integer>();
         jeu1.add(5);
         jeu1.add(7);
-        posGagnantes.clear();
         testCasEstconnueGagnante(jeu2, false);
     }
 

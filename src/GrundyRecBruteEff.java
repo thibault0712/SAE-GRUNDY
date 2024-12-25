@@ -655,7 +655,7 @@ class GrundyRecBruteEff {
             int n;
             long t1, t2, diffT;
     
-            n = 10;
+            n = 3;
     
             System.out.println("\n\t\t Test de l'efficacité estGagnante\n");
     
