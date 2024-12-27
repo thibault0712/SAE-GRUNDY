@@ -2,13 +2,13 @@ import java.util.ArrayList;
 
 /**
  * Grundy Game with AI for the machine
- * This program is an update of grundyRecBruteEff, we have added a new Arraylist to store loosing positions
- * This version is faster than the previous one because it uses a list of known losing positions
+ * This program is an update of grundyRecPerdantNeutre, we improve the simplification of the game board by using the type of piles
+ * This version is faster than the previous one because we improve the simplification of the game board so we decrease the number of calculation
  *
  * @author J-F. Kamp, C. Tibermacine, T. FALEZAN, J. MAILLARD
  */
 
-class GrundyRecPerd {
+class GrundyRecGplusGequalsP {
 
     /**
      * Compter per minute to obtain the complexity
@@ -21,9 +21,21 @@ class GrundyRecPerd {
     ArrayList<ArrayList<Integer>> posPerdantes = new ArrayList<ArrayList<Integer>>();
 
     /**
+     * List of known losing positions
+     */
+    ArrayList<ArrayList<Integer>> posGagnantes = new ArrayList<ArrayList<Integer>>();
+
+    /**
+     * Type of piles
+     */
+    int[] dicoType = {0, 0, 0, 1, 0, 2, 1, 0, 2, 1, 0, 2, 1, 3, 2, 1, 3, 2, 4, 3, 0, 4, 3, 0, 4, 3, 0, 4, 1, 2, 3, 1, 2, 4, 1, 2, 4, 1, 2, 4, 1, 5, 4, 1, 5, 4, 1, 5, 4, 1, 0};
+
+
+    /**
      * Principal method
      */
     void principal() {
+        /*
 		System.out.println("------------------------------------------");
         testJouerGagnant();
         System.out.println("------------------------------------------");
@@ -35,7 +47,9 @@ class GrundyRecPerd {
 		System.out.println("------------------------------------------");
 		testPlayerEditMatchsticks();
 		System.out.println("------------------------------------------");
+        */
 		testRobotEditMatchsticks() ;
+        /* 
 		System.out.println("------------------------------------------");
 		testRobotPlayedRandom();
 		System.out.println("------------------------------------------");
@@ -43,9 +57,18 @@ class GrundyRecPerd {
 		System.out.println("------------------------------------------");
         testEstConnuePerdante();
 		System.out.println("------------------------------------------");
+        testEstConnueGagnante();
+        System.out.println("------------------------------------------");
+        */
+        testSimplifyGameBoard();
+        System.out.println("------------------------------------------");
+        testConvertPileToType();
+        System.out.println("------------------------------------------");
 		System.out.println();
+        
         System.out.println("Test d'efficacités");
         testEstGagnanteEfficacite();
+        
 		
 		System.out.println("Lancement du jeu de Grundy");
         leJeu();
@@ -264,11 +287,14 @@ class GrundyRecPerd {
     boolean estPerdante(ArrayList<Integer> jeu) {
         ArrayList<Integer> gameSorted = sortGame(jeu);
         boolean ret = true; // By default the configuration is losing 
+    
 		
         if (jeu == null) {
             System.err.println("estPerdante(): le paramètre jeu est null");
         }else if(estConnuePerdante(jeu)){
             ret = true;
+        }else if(estConnueGagnante(jeu)){
+            ret = false;
         }else{
             // if there are only piles of 1 or 2 matchsticks left on the game board
             // then the situation is necessarily losing (ret=true) = END of recursion
@@ -298,6 +324,14 @@ class GrundyRecPerd {
 					
                         // If ANY decomposition (from the game) is losing (for the opponent), then the game is NOT losing.
                         // Therefore, we will return false: the situation (game) is NOT losing.
+                        
+                        if (gameSorted.size() == 1){ // If the game has only one pile of matchsticks this pile is obligatory a winning Pile 
+                            posGagnantes.add(gameSorted);
+                        }else{ // If the game has more than one pile of matchsticks we need to simplify the game because we don't know if each pile is winning or not
+                            ArrayList<Integer> simplification = simplifyGameBoard(gameSorted);
+                            posGagnantes.add(simplification);
+                        }
+
                         ret = false;						
                     } else {
                         // generates the next trial configuration (i.e., a possible decomposition)
@@ -317,7 +351,7 @@ class GrundyRecPerd {
 
 
     /**
-     * Indicates if the configuration is know as loosing.
+     * Indicates if the configuration is know as loosing by checking if the game board is in the list of losing positions.
      * @param jeu game board
      * @return true if the configuration is losing, false otherwise
      */
@@ -337,10 +371,56 @@ class GrundyRecPerd {
     }
 
     /**
-     * Sort the game board by ascending order and remove the piles with 1 or 2 matchsticks.
-     * @param game game board
-     * @return the game board sorted
+     * Indicates if the configuration is know as wining by checking if the game board is in the list of wining positions.
+     * @param jeu game board
+     * @return true if the configuration is losing, false otherwise
      */
+    boolean estConnueGagnante(ArrayList<Integer> jeu) {
+        boolean ret = false;
+        ArrayList<Integer> gameSorted = sortGame(jeu);
+
+        if (gameSorted.size() == 1){ // If the game has only one pile of matchsticks we can check directly if it's a winning pile or not if we do that we avoid also a stack overflow
+            int i = 0;
+
+            // We check if the game is in the list of winning positions
+            while (i < posGagnantes.size() && !ret) { 
+
+                if (posGagnantes.get(i).equals(gameSorted)) {
+                    ret = true;
+                }
+
+                i = i + 1;
+            }
+
+        }else{ // If the game has more than one pile of matchsticks we need to simplify the game
+            ArrayList<Integer> simplification = simplifyGameBoard(gameSorted); // We simplify the game by removing all the losing piles because change nothing to the result but increase the speed of the program
+            int i = 0;
+
+            // We verify before if we can deduce the result directly
+            // It's interessant to do that because we avoid to use a loop
+            if (simplification.size() == 1){ // If the game has only one pile of matchsticks this pile is obligatory a winning Pile 
+                ret = true;
+            } else if (simplification.size() == 2 && simplification.get(0) <= 50 && simplification.get(1) <= 50){ // If the game has only two winning piles with winning type we can deduce the result directly. <= 50 because we know the type of the piles until 50
+                ret = true;
+            }else if(simplification.size() == 0){ // If the game has no pile of matchsticks this is a losing position
+                ret = false;
+            }else{
+                // We check if the simplified game is in the list of winning positions
+                // Take more time than the previous verification because we need to use a loop
+                while (i < posGagnantes.size() && !ret) { 
+
+                    if (posGagnantes.get(i).equals(simplification)) {
+                        ret = true;
+                    }
+
+                    i = i + 1;
+                }
+            }
+        }
+
+        return ret;
+    }
+
     /**
      * Sort the game board by ascending order and remove the piles with 1 or 2 matchsticks.
      * @param game game board
@@ -349,15 +429,12 @@ class GrundyRecPerd {
     ArrayList<Integer> sortGame(ArrayList<Integer> game){
         ArrayList<Integer> gameSorted = new ArrayList<>();
 
-        // We remove all piles with 1 or 2 matchsticks
         for (int j = 0; j < game.size(); j++) {
             if (game.get(j) > 2) {
                 gameSorted.add(game.get(j));
             }
         }
 
-        // We sort the game board by ascending order
-        // We have decided to use the bubble sort because we have only positive numbers
         for (int i = 0; i < gameSorted.size() - 1; i++) { 
             for (int j = 0; j < gameSorted.size() - i - 1; j++) {
                 if (gameSorted.get(j) > gameSorted.get(j + 1)) {
@@ -369,6 +446,74 @@ class GrundyRecPerd {
         }
 
         return gameSorted;
+    }
+
+
+    /**
+     * Remove all loosing piles from the game board and remove winning piles with the same type
+     * It's recommanded to give the game board already sorted
+     * @param gameSorted game board sorted
+     * @return the game board without loosing piles
+     */
+    ArrayList<Integer> simplifyGameBoard(ArrayList<Integer> gameSorted){
+        ArrayList<Integer> result = new ArrayList<Integer>();
+        boolean sameType = false;
+
+        // We travel the game board sorted and we remove all piles wich are loosing
+        for (int i = 0; i < gameSorted.size(); i++) {
+            ArrayList<Integer> testTemp = new ArrayList<Integer>();
+            testTemp.add(gameSorted.get(i));
+            if (!estPerdante(testTemp)) {
+                result.add(gameSorted.get(i));
+            }
+        }
+
+        ArrayList<Integer> typeGameSorted = convertPileToType(result);
+
+        for (int i = 0; i < typeGameSorted.size(); i++) { 
+            sameType = false;
+
+            for (int j = i + 1; j < typeGameSorted.size(); j++) {
+
+                // We remove the winning piles with the same type
+                // If we don't know the type of the pile we don't remove it
+                if (typeGameSorted.get(i) == typeGameSorted.get(j) && typeGameSorted.get(i) != -1) {
+                    result.remove(j);
+                    typeGameSorted.remove(j);
+                    sameType = true;    
+                    j += 1;
+                }
+
+            }
+
+            if (sameType) {
+                result.remove(i);
+                typeGameSorted.remove(i);
+                i += 1;
+            }
+        }
+
+        return result;
+    }
+
+
+    /**
+     * Convert the game board from the number of matchsticks to the type of piles
+     * @param game game board
+     * @return the game board with the type of piles if the type is not in the dicoType we put -1
+     */ 
+    ArrayList<Integer> convertPileToType(ArrayList<Integer> game){
+        ArrayList<Integer> result = new ArrayList<Integer>();
+
+        for (int i = 0; i < game.size(); i++) {
+            if (dicoType.length < game.get(i)){
+                result.add(-1);
+            }else{
+                result.add(dicoType[game.get(i)]);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -453,7 +598,7 @@ class GrundyRecPerd {
             System.err.println("enlever() : le nb d'allumettes à retirer est la moitié");
         } else {
             // new pile added to the game (necessarily at the end of the list)
-            // this new pile contains the number of matchsticks removed (nb) from the pile to be split
+            // this new pile contains the number of matchsticks removed (nb) from the pile to be split		
             jeu.add(nb);
             // the remaining pile has "nb" fewer matchsticks
             jeu.set ( ligne, (jeu.get(ligne) - nb) );
@@ -643,7 +788,7 @@ class GrundyRecPerd {
         return numTas;
     }
 
- /**
+     /**
      * Test a case of the method suivant
      * 
      * @param jeu the game board
@@ -720,6 +865,7 @@ class GrundyRecPerd {
 
     }
 
+
     /**
      * Test the efficacity of the method estGagnante
      */
@@ -732,8 +878,9 @@ class GrundyRecPerd {
     
             System.out.println("\n\t\t Test de l'efficacité estGagnante\n");
     
-            for ( int i = 1; i <= 31; i++ ) {
+            for ( int i = 1; i <= 50; i++ ) {
                 posPerdantes.clear();
+                posGagnantes.clear();
                 jeu = new ArrayList<Integer>();
                 jeu.add(n);
                 cpt = 0;
@@ -795,6 +942,7 @@ class GrundyRecPerd {
 		jeu4.add(0);
 		testCasDisplayMatchsticks(jeu4, " ");
 	}
+
     /**
 	 * Test case for playerEditMatchsticks
 	 * 
@@ -844,7 +992,7 @@ class GrundyRecPerd {
 		res2.add(2);
 		System.out.println("Cas 2 : Veuillez entrer les valeur correspondantes ( tas = 2) puis ( tas = 1, allumettes = 2) ");
 		testCasPlayerEditMatchsticks(jeu2, "Joueur 2", res2);
-
+        
         // Case 3: Attempt to remove all matchsticks (forbidden)
 		ArrayList<Integer> jeu3 = new ArrayList<>();
 		jeu3.add(7);
@@ -855,7 +1003,7 @@ class GrundyRecPerd {
 		res3.add(1);
 		System.out.println("Cas 3 : Veuillez retirer toutes les allumettes du ( tas = 0) , puis entrer les valeurs correspondantes ( allumettes = 1 )");
 		testCasPlayerEditMatchsticks(jeu3, "Joueur 1", res3);
-
+        
         // Case 4: Forbidden separation into two equal piles
 		ArrayList<Integer> jeu4 = new ArrayList<>();
 		jeu4.add(6);
@@ -910,15 +1058,16 @@ class GrundyRecPerd {
         testCasRobotEditMatchsticks(jeu1, res1, false);
 
         // Case 2 : Robot plays randomly when no winning move is available
+        // TODO : problem with the random we check only one result
         ArrayList<Integer> jeu2 = new ArrayList<>();
-        jeu2.add(4);
+        jeu2.add(3);
         jeu2.add(2);
         jeu2.add(1);
         ArrayList<Integer> res2 = new ArrayList<>();
-        res2.add(1);
+        res2.add(2);
         res2.add(2);
         res2.add(1);
-        res2.add(3);
+        res2.add(1);
         System.out.println("Cas 2 : Le robot joue un mouvement aléatoire");
         testCasRobotEditMatchsticks(jeu2, res2, false);
 
@@ -959,8 +1108,7 @@ class GrundyRecPerd {
 			System.out.println("Résultat après coup du robot : " + jeu);
 			System.out.println(jeu.size() == expectedSize ? "OK" : "ECHEC");
 			System.out.println();
-		}
-        else {
+		} else {
 			System.out.println("erreur : robotPlayedRandom -> situation impossible");
 			System.out.println();
 		}
@@ -973,7 +1121,6 @@ class GrundyRecPerd {
     void testRobotPlayedRandom() {
         System.out.println();
         System.out.println("*** testRobotPlayedRandom() ***");
-
         // Case 1 : Robot removes matchsticks from a valid pile
         ArrayList<Integer> jeu1 = new ArrayList<>();
         jeu1.add(5);
@@ -1066,6 +1213,50 @@ class GrundyRecPerd {
     }
 
     /**
+     * Test a case of the method estConnueGagnante
+     * @param jeu the game board
+     * @param result the expected result
+     */
+    void testCasEstconnueGagnante(ArrayList<Integer> jeu, boolean result){
+        // Arrange
+        System.out.print("estConnueGagnante (" + jeu.toString() + ") : ");
+        // Act
+        boolean resExec = estConnueGagnante(jeu);
+        // Assert
+        System.out.print(resExec);
+        if (result == resExec) {
+            System.out.println(" -> OK");
+        } else {
+            System.err.println(" -> ERREUR");
+        }
+    }
+
+    /**
+     * Test the method estConnueGagnante
+     */
+    void testEstConnueGagnante(){
+        System.out.println();
+        System.out.println("*** testEstConnueGagnante() ***");
+
+        System.out.println("Test des cas normaux");
+
+        //Case 1 : the game board is known as winning
+        ArrayList<Integer> jeu1 = new ArrayList<Integer>();
+        jeu1.add(4);
+        jeu1.add(6);
+        posGagnantes.clear();
+        posGagnantes.add(jeu1);
+        testCasEstconnueGagnante(jeu1, true);
+
+        //Case 2 : the game board is not known as winning
+        ArrayList<Integer> jeu2 = new ArrayList<Integer>();
+        jeu1.add(5);
+        jeu1.add(7);
+        posGagnantes.clear();
+        testCasEstconnueGagnante(jeu2, false);
+    }
+
+    /**
      * Test a case of the method sortGame
      * @param game the game board
      * @param result the expected result
@@ -1113,6 +1304,106 @@ class GrundyRecPerd {
         game2.add(2);
         ArrayList<Integer> res2 = new ArrayList<Integer>();
         testCasSortGame(game2, res2);
+    }
+
+    /**
+     * Test a case of the method removeLoosingPiles
+     * @param gameSorted the game board sorted
+     * @param result the expected result
+     */
+    void testCasSimplifyGameBoard(ArrayList<Integer> gameSorted, ArrayList<Integer> result){
+        System.out.print("removeLoosingPiles (" + gameSorted.toString() + ") : ");
+
+        ArrayList<Integer> resExec = simplifyGameBoard(gameSorted);
+        System.out.print(resExec);
+        if (result.equals(resExec)) {
+            System.out.println(" -> OK");
+        } else {
+            System.err.println(" -> ERREUR");
+        }
+    }
+
+    /**
+     * Test the method removeLoosingPiles
+     */
+    void testSimplifyGameBoard(){
+        System.out.println();
+        System.out.println("*** testRemoveLoosingPiles() ***");
+
+        System.out.println("Test des cas normaux");
+
+        //Case 1 : game board with 4 to remove and 3 to keep
+        ArrayList<Integer> game1 = new ArrayList<Integer>();
+        game1.add(3);
+        game1.add(4);
+        ArrayList<Integer> gameSorted1 = sortGame(game1);
+        ArrayList<Integer> res1 = new ArrayList<Integer>();
+        res1.add(3);
+        testCasSimplifyGameBoard(gameSorted1, res1);
+
+        //Case 2 : game board with 4 to remove and nothing to keep
+        ArrayList<Integer> game2 = new ArrayList<Integer>();
+        game2.add(4);
+        ArrayList<Integer> gameSorted2 = sortGame(game2);
+        ArrayList<Integer> res2 = new ArrayList<Integer>();
+        testCasSimplifyGameBoard(gameSorted2, res2);
+
+        //Case 3 : game board with 2 x 4 to remove and 3 to keep
+        ArrayList<Integer> game3 = new ArrayList<Integer>();
+        game3.add(4);
+        game3.add(3);
+        game3.add(4);
+        ArrayList<Integer> gameSorted3 = sortGame(game3);
+        ArrayList<Integer> res3 = new ArrayList<Integer>();
+        res3.add(3);
+        testCasSimplifyGameBoard(gameSorted3, res3);
+    }
+
+    /**
+     * Test a case of the method convertPileToType
+     * @param game the game board
+     * @param result the expected result
+     */
+    void testCasConvertPileToType(ArrayList<Integer> game, ArrayList<Integer> result){
+        System.out.print("convertPileToType (" + game.toString() + ") : ");
+
+        ArrayList<Integer> resExec = convertPileToType(game);
+        System.out.print(resExec);
+        if (result.equals(resExec)) {
+            System.out.println(" -> OK");
+        } else {
+            System.err.println(" -> ERREUR");
+        }
+    }
+
+    /**
+     * Test the method convertPileToType
+     */
+    void testConvertPileToType(){
+        System.out.println();
+        System.out.println("*** testConvertPileToType() ***");
+
+        System.out.println("Test des cas normaux");
+
+        //Case 1 : game board [3, 4] convert to [1, 0]
+        ArrayList<Integer> game1 = new ArrayList<Integer>();
+        game1.add(3);
+        game1.add(4);
+        ArrayList<Integer> res1 = new ArrayList<Integer>();
+        res1.add(1);
+        res1.add(0);
+        testCasConvertPileToType(game1, res1);
+
+        //Case 2 : game board [40, 50, 99] convert to [1, 0, -1] 99 hasn't type so we return -1
+        ArrayList<Integer> game2 = new ArrayList<Integer>();
+        game2.add(40);
+        game2.add(50);
+        game2.add(99);
+        ArrayList<Integer> res2 = new ArrayList<Integer>();
+        res2.add(1);
+        res2.add(0);
+        res2.add(-1);
+        testCasConvertPileToType(game2, res2);
     }
 
 }

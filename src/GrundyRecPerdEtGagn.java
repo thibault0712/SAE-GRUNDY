@@ -29,6 +29,7 @@ class GrundyRecPerdEtGagn {
      * Principal method
      */
     void principal() {
+        /*
 		System.out.println("------------------------------------------");
         testJouerGagnant();
         System.out.println("------------------------------------------");
@@ -51,8 +52,10 @@ class GrundyRecPerdEtGagn {
         testEstConnueGagnante();
         System.out.println("------------------------------------------");
 		System.out.println();
+        */
         System.out.println("Test d'efficacités");
         testEstGagnanteEfficacite();
+        
 		
 		System.out.println("Lancement du jeu de Grundy");
         leJeu();
@@ -373,15 +376,23 @@ class GrundyRecPerdEtGagn {
      * @param game game board
      * @return the game board sorted
      */
+     /**
+     * Sort the game board by ascending order and remove the piles with 1 or 2 matchsticks.
+     * @param game game board
+     * @return the game board sorted
+     */
     ArrayList<Integer> sortGame(ArrayList<Integer> game){
         ArrayList<Integer> gameSorted = new ArrayList<>();
 
+        // We remove all piles with 1 or 2 matchsticks
         for (int j = 0; j < game.size(); j++) {
             if (game.get(j) > 2) {
                 gameSorted.add(game.get(j));
             }
         }
 
+        // We sort the game board by ascending order
+        // We have decided to use the bubble sort because we have only positive numbers
         for (int i = 0; i < gameSorted.size() - 1; i++) { 
             for (int j = 0; j < gameSorted.size() - i - 1; j++) {
                 if (gameSorted.get(j) > gameSorted.get(j + 1)) {
@@ -667,58 +678,7 @@ class GrundyRecPerdEtGagn {
         return numTas;
     }
 
-    /**
-     * Test the method suivant()
-     */
-    //TODO add comments
-    void testSuivant() {
-        System.out.println();
-        System.out.println("*** testSuivant() ****");
-
-        int ligne1 = 0;
-        int resLigne1 = 0;
-        ArrayList<Integer> jeu1 = new ArrayList<Integer>();
-        jeu1.add(10);
-        ArrayList<Integer> jeuEssai1 = new ArrayList<Integer>();
-        jeuEssai1.add(9);
-        jeuEssai1.add(1);
-        ArrayList<Integer> res1 = new ArrayList<Integer>();
-        res1.add(8);
-        res1.add(2);
-        testCasSuivant(jeu1, jeuEssai1, ligne1, res1, resLigne1);
-
-        int ligne2 = 0;
-        int resLigne2 = -1;
-        ArrayList<Integer> jeu2 = new ArrayList<Integer>();
-        jeu2.add(10);
-        ArrayList<Integer> jeuEssai2 = new ArrayList<Integer>();
-        jeuEssai2.add(6);
-        jeuEssai2.add(4);
-        ArrayList<Integer> res2 = new ArrayList<Integer>();
-        res2.add(10);
-        testCasSuivant(jeu2, jeuEssai2, ligne2, res2, resLigne2);
-
-        int ligne3 = 1;
-        int resLigne3 = 1;
-        ArrayList<Integer> jeu3 = new ArrayList<Integer>();
-        jeu3.add(4);
-        jeu3.add(6);
-        jeu3.add(3);
-        ArrayList<Integer> jeuEssai3 = new ArrayList<Integer>();
-        jeuEssai3.add(4);
-        jeuEssai3.add(5);
-        jeuEssai3.add(3);
-        jeuEssai3.add(1);
-        ArrayList<Integer> res3 = new ArrayList<Integer>();
-        res3.add(4);
-        res3.add(4);
-        res3.add(3);
-        res3.add(2);
-        testCasSuivant(jeu3, jeuEssai3, ligne3, res3, resLigne3);
-
-    }
-
-    /**
+     /**
      * Test a case of the method suivant
      * 
      * @param jeu the game board
@@ -740,6 +700,59 @@ class GrundyRecPerdEtGagn {
         } else {
             System.err.println("ERREUR\n");
         }
+    }
+
+    /**
+     * Test the method suivant()
+     */
+    void testSuivant() {
+        System.out.println();
+        System.out.println("*** testSuivant() ****");
+
+        // Case 1 : New decomposition on the line 0
+        int ligne1 = 0;
+        int resLigne1 = 0;
+        ArrayList<Integer> jeu1 = new ArrayList<Integer>();
+        jeu1.add(10);
+        ArrayList<Integer> jeuEssai1 = new ArrayList<Integer>();
+        jeuEssai1.add(9);
+        jeuEssai1.add(1);
+        ArrayList<Integer> res1 = new ArrayList<Integer>();
+        res1.add(8);
+        res1.add(2);
+        testCasSuivant(jeu1, jeuEssai1, ligne1, res1, resLigne1);
+
+        // Case 2 : no further decomposition is possible
+        int ligne2 = 0;
+        int resLigne2 = -1;
+        ArrayList<Integer> jeu2 = new ArrayList<Integer>();
+        jeu2.add(10);
+        ArrayList<Integer> jeuEssai2 = new ArrayList<Integer>();
+        jeuEssai2.add(6);
+        jeuEssai2.add(4);
+        ArrayList<Integer> res2 = new ArrayList<Integer>();
+        res2.add(10);
+        testCasSuivant(jeu2, jeuEssai2, ligne2, res2, resLigne2);
+
+        // Case 3 : New decomposition on the line 1
+        int ligne3 = 1;
+        int resLigne3 = 1;
+        ArrayList<Integer> jeu3 = new ArrayList<Integer>();
+        jeu3.add(4);
+        jeu3.add(6);
+        jeu3.add(3);
+        ArrayList<Integer> jeuEssai3 = new ArrayList<Integer>();
+        jeuEssai3.add(4);
+        jeuEssai3.add(5);
+        jeuEssai3.add(3);
+        jeuEssai3.add(1);
+        ArrayList<Integer> res3 = new ArrayList<Integer>();
+        res3.add(4);
+        res3.add(4);
+        res3.add(3);
+        res3.add(2);
+        testCasSuivant(jeu3, jeuEssai3, ligne3, res3, resLigne3);
+
     }
 
 
