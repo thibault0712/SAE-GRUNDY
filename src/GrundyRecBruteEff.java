@@ -19,26 +19,20 @@ class GrundyRecBruteEff {
      * Principal method
      */
     void principal() {
-		System.out.println("------------------------------------------");
+        // Test methods
         testJouerGagnant();
-        System.out.println("------------------------------------------");
 		testPremier();
-		System.out.println("------------------------------------------");
 		testSuivant();
-		System.out.println("------------------------------------------");
 		testDisplayMatchsticks();
-		System.out.println("------------------------------------------");
 		testPlayerEditMatchsticks();
-		System.out.println("------------------------------------------");
 		testRobotEditMatchsticks() ;
-		System.out.println("------------------------------------------");
 		testRobotPlayedRandom();
-		System.out.println("------------------------------------------");
-		System.out.println();
-        System.out.println("Test d'efficacités");
+
+        //Efficiency test
         testEstGagnanteEfficacite();
 		
-		System.out.println("Lancement du jeu de Grundy");
+        System.out.println();
+		System.out.println("====================== Lancement du jeu de Grundy ======================");
         leJeu();
     }
 
@@ -94,7 +88,6 @@ class GrundyRecBruteEff {
      * @param jeu the table of matchticks
      */
     void displayMatchsticks(ArrayList<Integer> jeu){
-        System.out.println();
         System.out.print("Jeu actuel : ");
 
         for (int i = 0; i < jeu.size(); i++) {
@@ -125,7 +118,7 @@ class GrundyRecBruteEff {
 
 		
 		do {
-			line = SimpleInput.getInt("\n" + playerName + " -> Choisissez le tas à modifier (entre 0 et " + (jeu.size() - 1) + ") : ");
+			line = SimpleInput.getInt(playerName + " -> Choisissez le tas à modifier (entre 0 et " + (jeu.size() - 1) + ") : ");
 			
 			if (line < 0 || line >= jeu.size()) {
 				System.out.println("Erreur : Le numéro de tas choisi est invalide. Veuillez réessayer. ");
@@ -137,7 +130,7 @@ class GrundyRecBruteEff {
 
 		
 		do {
-			nb = SimpleInput.getInt("\n" + playerName + " -> Choisissez le nombre d'allumettes à retirer (entre 1 et " + (jeu.get(line) - 1) + ") : ");
+			nb = SimpleInput.getInt(playerName + " -> Choisissez le nombre d'allumettes à retirer (entre 1 et " + (jeu.get(line) - 1) + ") : ");
 			
 			if (nb < 1 || nb >= jeu.get(line)) {
 				System.out.println("Erreur : Le nombre d'allumettes à retirer est invalide. Veuillez réessayer. ");
@@ -323,9 +316,10 @@ class GrundyRecBruteEff {
      */
     void testJouerGagnant() {
         System.out.println();
-        System.out.println("*** testJouerGagnant() ***");
-
-        System.out.println("Test des cas normaux");
+        System.out.println();
+        System.out.println("====================== testJouerGagnant() ======================");
+        System.out.println();
+        System.out.println("********** Test des cas normaux **********");
         ArrayList<Integer> jeu1 = new ArrayList<Integer>();
         jeu1.add(6);
         ArrayList<Integer> resJeu1 = new ArrayList<Integer>();
@@ -345,7 +339,7 @@ class GrundyRecBruteEff {
      */
     void testCasJouerGagnant(ArrayList<Integer> jeu, ArrayList<Integer> resJeu, boolean res) {
         // Arrange
-        System.out.print("jouerGagnant (" + jeu.toString() + ") : ");
+        System.out.print("jouerGagnant (" + jeu.toString() + ") -> ");
 
         // Act
         boolean resExec = jouerGagnant(jeu);
@@ -354,9 +348,9 @@ class GrundyRecBruteEff {
         System.out.print(jeu.toString() + " " + resExec + " : ");
 		boolean egaliteJeux = jeu.equals(resJeu);
         if (  egaliteJeux && (res == resExec) ) {
-            System.out.println("OK\n");
+            System.out.println("OK");
         } else {
-            System.err.println("ERREUR\n");
+            System.err.println("ECHEC");
         }
     }	
 
@@ -471,8 +465,10 @@ class GrundyRecBruteEff {
      */
     void testPremier() {
         System.out.println();
-        System.out.println("*** testPremier()");
-
+        System.out.println();
+        System.out.println("====================== testPremier() ======================");
+        System.out.println();
+        System.out.println("********** Test des cas normaux **********");
         ArrayList<Integer> jeu1 = new ArrayList<Integer>();
         jeu1.add(10);
         jeu1.add(11);
@@ -492,17 +488,17 @@ class GrundyRecBruteEff {
      */
     void testCasPremier(ArrayList<Integer> jeu, int ligne, ArrayList<Integer> res) {
         // Arrange
-        System.out.print("premier (" + jeu.toString() + ") : ");
+        System.out.print("premier (" + jeu.toString() + ") -> ");
         ArrayList<Integer> jeuEssai = new ArrayList<Integer>();
         // Act
         int noLigne = premier(jeu, jeuEssai);
         // Assert
-        System.out.println("\nnoLigne = " + noLigne + " jeuEssai = " + jeuEssai.toString());
+        System.out.print(" noLigne = " + noLigne + " jeuEssai = " + jeuEssai.toString() + " : ");
 		boolean egaliteJeux = jeuEssai.equals(res);
         if ( egaliteJeux && noLigne == ligne ) {
-            System.out.println("OK\n");
+            System.out.println("OK");
         } else {
-            System.err.println("ERREUR\n");
+            System.err.println("ECHEC");
         }
     }
 
@@ -584,16 +580,16 @@ class GrundyRecBruteEff {
      */
     void testCasSuivant(ArrayList<Integer> jeu, ArrayList<Integer> jeuEssai, int ligne, ArrayList<Integer> resJeu, int resLigne) {
         // Arrange
-        System.out.print("suivant (" + jeu.toString() + ", " + jeuEssai.toString() + ", " + ligne + ") : ");
+        System.out.print("suivant (" + jeu.toString() + ", " + jeuEssai.toString() + ", " + ligne + ") -> ");
         // Act
         int noLigne = suivant(jeu, jeuEssai, ligne);
         // Assert
-        System.out.println("\nnoLigne = " + noLigne + " jeuEssai = " + jeuEssai.toString());
+        System.out.print("noLigne = " + noLigne + " jeuEssai = " + jeuEssai.toString() + " : ");
 		boolean egaliteJeux = jeuEssai.equals(resJeu);
         if ( egaliteJeux && noLigne == resLigne ) {
-            System.out.println("OK\n");
+            System.out.println("OK");
         } else {
-            System.err.println("ERREUR\n");
+            System.err.println("ECHEC");
         }
     }
 
@@ -602,7 +598,10 @@ class GrundyRecBruteEff {
      */
     void testSuivant() {
         System.out.println();
-        System.out.println("*** testSuivant() ****");
+        System.out.println();
+        System.out.println("====================== testSuivant() ======================");
+        System.out.println();
+        System.out.println("********** Test des cas normaux **********");
 
         // Case 1 : New decomposition on the line 0
         int ligne1 = 0;
@@ -654,12 +653,13 @@ class GrundyRecBruteEff {
      */
     void testEstGagnanteEfficacite(){
             ArrayList<Integer> jeu;
-            int n;
+            int n = 3;
             long t1, t2, diffT;
-    
-            n = 3;
-    
-            System.out.println("\n\t\t Test de l'efficacité estGagnante\n");
+
+            System.out.println();
+            System.out.println();
+            System.out.println("====================== Test de l'efficacité estGagnante ======================");
+            System.out.println();
     
             for ( int i = 1; i <= 16; i++ ) {
                 jeu = new ArrayList<Integer>();
@@ -688,12 +688,10 @@ class GrundyRecBruteEff {
 	 * @param expected the expected string representation of the game
 	 */
 	void testCasDisplayMatchsticks(ArrayList<Integer> jeu, String expected) {
-		System.out.println();
 		System.out.println("Test avec le jeu : " + jeu);
 		System.out.println("Attendu : " + expected);
 		System.out.print("Résultat : ");
 		displayMatchsticks(jeu);
-		System.out.println();
 	}
 		
 	/**
@@ -701,27 +699,33 @@ class GrundyRecBruteEff {
 	 */
 	void testDisplayMatchsticks() {
 		System.out.println();
-		System.out.println("*** testDisplayMatchsticks() ***");
+        System.out.println();
+		System.out.println("====================== testDisplayMatchsticks() ======================");
+        System.out.println();
+        System.out.println("********** Test des cas normaux **********");
         // Case 1: game with multiple piles of matchsticks
 		ArrayList<Integer> jeu1 = new ArrayList<>();
 		jeu1.add(3);
 		jeu1.add(5);
 		jeu1.add(2);
-		testCasDisplayMatchsticks(jeu1, "||| et ||||| et ||");
+		testCasDisplayMatchsticks(jeu1, "Jeu actuel : ||| et ||||| et ||");
 		
         // Case 2: game with a single pile
 		ArrayList<Integer> jeu2 = new ArrayList<>();
 		jeu2.add(7);
-		testCasDisplayMatchsticks(jeu2, "|||||||");
+        System.out.println();
+		testCasDisplayMatchsticks(jeu2, "Jeu actuel : |||||||");
 		
         // Case 3: empty game
 		ArrayList<Integer> jeu3 = new ArrayList<>();
-		testCasDisplayMatchsticks(jeu3, " ");
+        System.out.println();
+		testCasDisplayMatchsticks(jeu3, "Jeu actuel : ");
 		
         // Case 4: game with an empty pile (0 matchsticks)
 		ArrayList<Integer> jeu4 = new ArrayList<>();
 		jeu4.add(0);
-		testCasDisplayMatchsticks(jeu4, " ");
+        System.out.println();
+		testCasDisplayMatchsticks(jeu4, "Jeu actuel : ");
 	}
 
     /**
@@ -732,13 +736,15 @@ class GrundyRecBruteEff {
 	 * @param expected     The expected state of the matchstick piles after modification.
 	 */
 	void testCasPlayerEditMatchsticks(ArrayList<Integer> jeu, String playerName, ArrayList<Integer> expected) {
-		System.out.println("\nTest avec le jeu : " + jeu );
-		System.out.println("Attendu : " + expected);
-		
+        System.out.println("Test avec le jeu : " + jeu );
 		playerEditMatchsticks(jeu, playerName);
-		System.out.println("Résultat : " + jeu);
-		System.out.println(expected.equals(jeu) ? "OK " : "ECHEC ");
-		System.out.println();
+        System.out.println("Attendu : " + expected);
+		System.out.print("Résultat : " + jeu + " : ");
+        if (expected.equals(jeu)) {
+            System.out.println("OK ");
+        } else {
+            System.out.println("ECHEC ");
+        }
 	}
 
 	/**
@@ -746,7 +752,11 @@ class GrundyRecBruteEff {
 	 */
 	void testPlayerEditMatchsticks() {
 		System.out.println();
-		System.out.println("*** testPlayerEditMatchsticks() ***");
+        System.out.println();
+		System.out.println("====================== testPlayerEditMatchsticks() ======================");
+        System.out.println();
+        System.out.println("********** Test des cas normaux **********");
+
         // Case 1: Successful modification
 		ArrayList<Integer> jeu1 = new ArrayList<>();
 		jeu1.add(5);
@@ -757,7 +767,6 @@ class GrundyRecBruteEff {
 		res1.add(5);
 		res1.add(3);
 		res1.add(3);
-		System.out.println();
 		System.out.println("Cas 1 : Veuillez entrer les valeurs correspondantes (tas = 1, allumettes = 3)");
 		testCasPlayerEditMatchsticks(jeu1, "Joueur 1", res1);
 
@@ -771,7 +780,7 @@ class GrundyRecBruteEff {
 		res2.add(6);
 		res2.add(2);
 		res2.add(2);
-		System.out.println("Cas 2 : Veuillez entrer les valeur correspondantes ( tas = 2) puis ( tas = 1, allumettes = 2) ");
+		System.out.println("\nCas 2 : Veuillez entrer les valeur correspondantes ( tas = 2) puis ( tas = 1, allumettes = 2) ");
 		testCasPlayerEditMatchsticks(jeu2, "Joueur 2", res2);
         
         // Case 3: Attempt to remove all matchsticks (forbidden)
@@ -782,7 +791,7 @@ class GrundyRecBruteEff {
 		res3.add(6);
 		res3.add(10);
 		res3.add(1);
-		System.out.println("Cas 3 : Veuillez retirer toutes les allumettes du ( tas = 0) , puis entrer les valeurs correspondantes ( allumettes = 1 )");
+		System.out.println("\nCas 3 : Veuillez retirer toutes les allumettes du ( tas = 0) , puis entrer les valeurs correspondantes ( allumettes = 1 )");
 		testCasPlayerEditMatchsticks(jeu3, "Joueur 1", res3);
         
         // Case 4: Forbidden separation into two equal piles
@@ -793,7 +802,7 @@ class GrundyRecBruteEff {
 		res4.add(4);
 		res4.add(9);
 		res4.add(2);
-		System.out.println("Cas 4 : Veuillez prendre le ( tas = 0 ) et le diviser en deux tas égaux, puis entrer les valeurs correspondantes (  allumettes = 2) ");
+		System.out.println("\nCas 4 : Veuillez prendre le ( tas = 0 ) et le diviser en deux tas égaux, puis entrer les valeurs correspondantes (  allumettes = 2) ");
 		testCasPlayerEditMatchsticks(jeu4, "Joueur 2", res4);
 	}
 
@@ -803,21 +812,35 @@ class GrundyRecBruteEff {
      *
      * @param jeu          The initial list of matchstick piles.
      * @param expected     The expected state of the matchstick piles after modification.
-     * @param casErreur	   A variable who check if a situation is an Error case
+     * @param playAleatory A variable which check if the robot plays randomly
+     * @param casErreur	   A variable which check if a situation is an Error case
      */
-    void testCasRobotEditMatchsticks(ArrayList<Integer> jeu, ArrayList<Integer> expected, boolean casErreur) {
-        System.out.println("\nTest avec le jeu : " + jeu);
+    void testCasRobotEditMatchsticks(ArrayList<Integer> jeu, ArrayList<Integer> expected, boolean playAleatory, boolean casErreur) {
+        System.out.println("Test avec le jeu : " + jeu);
         if (casErreur == false){
-			System.out.println("Attendu : " + expected);
-			robotEditMatchsticks(jeu);
-			System.out.println("Résultat : " + jeu);
-			System.out.println(expected.equals(jeu) ? "OK" : "ECHEC");
-			System.out.println();
-		}
-        else{
-			System.out.println("erreur : robotEditMatchsticks -> situation impossible");
-			System.out.println();
-		}
+            if (playAleatory){
+                System.out.print("Attendu : Mouvement aléatoire");
+                robotEditMatchsticks(jeu);
+                if (estPossible(jeu)){
+                    System.out.println("Attendu : " + "(mouvement aléatoire possible)");
+                    System.out.println("Résultat : " + jeu + " (mouvement aléatoire possible) : OK");
+                }else{
+                    System.out.println("Résultat : " + jeu + " (mouvement aléatoire impossible)");
+                    System.out.println("Attendu : " + "(mouvement aléatoire possible) : ECHEC");
+                }
+            } else {
+                System.out.print("Attendu : " + expected);
+                robotEditMatchsticks(jeu);
+                System.out.print("Résultat : " + jeu + " : ");
+                if (expected.equals(expected)){
+                    System.out.println("OK");
+                } else {
+                    System.out.println("ECHEC");
+                }
+            }
+        } else {
+            System.out.println("Erreur : robotEditMatchsticks -> situation impossible");
+        }
     }
 
     /**
@@ -825,7 +848,10 @@ class GrundyRecBruteEff {
      */
     void testRobotEditMatchsticks() {
         System.out.println();
-        System.out.println("*** testRobotEditMatchsticks() ***");
+        System.out.println();
+        System.out.println("====================== testRobotEditMatchsticks() ======================");
+        System.out.println();
+        System.out.println("********** Test des cas normaux **********");
 
         // Case 1 : Robot performs a winning move
         ArrayList<Integer> jeu1 = new ArrayList<>();
@@ -836,7 +862,7 @@ class GrundyRecBruteEff {
         res1.add(7); // Robot removes 1 matchstick to avoid equal piles
         res1.add(1);
         System.out.println("Cas 1 : Le robot effectue un mouvement gagnant sur le tas 1 (allumettes = 1)");
-        testCasRobotEditMatchsticks(jeu1, res1, false);
+        testCasRobotEditMatchsticks(jeu1, res1, false, false);
 
         // Case 2 : Robot plays randomly when no winning move is available
         ArrayList<Integer> jeu2 = new ArrayList<>();
@@ -848,8 +874,9 @@ class GrundyRecBruteEff {
         res2.add(2);
         res2.add(1);
         res2.add(3);
+        System.out.println();
         System.out.println("Cas 2 : Le robot joue un mouvement aléatoire");
-        testCasRobotEditMatchsticks(jeu2, res2, false);
+        testCasRobotEditMatchsticks(jeu2, res2, true,false);
 
         // Case 3 : Robot plays on the only valid pile
         ArrayList<Integer> jeu3 = new ArrayList<>();
@@ -859,8 +886,9 @@ class GrundyRecBruteEff {
         res3.add(1);
         res3.add(7);
         res3.add(1); // Robot removes 1 matchstick from the second pile
+        System.out.println();
         System.out.println("Cas 3 : Le robot joue sur le tas 1 avec 1 allumette enlevée");
-        testCasRobotEditMatchsticks(jeu3, res3, false);
+        testCasRobotEditMatchsticks(jeu3, res3, false,false);
 
         // Case 4 : No moves possible for the robot (all piles have <= 2 matchsticks)
         ArrayList<Integer> jeu4 = new ArrayList<>();
@@ -869,11 +897,12 @@ class GrundyRecBruteEff {
         ArrayList<Integer> res4 = new ArrayList<>();
         res4.add(2);
         res4.add(2); // No change, robot cannot play
+        System.out.println();
         System.out.println("Cas 4 : Aucun mouvement possible pour le robot");
-        testCasRobotEditMatchsticks(jeu4, res4, true);
+        testCasRobotEditMatchsticks(jeu4, res4, false, true);
     }
 
-    	 /**
+    /**
      * Test case for robotPlayedRandom
      *
      * @param jeu          The initial list of matchstick piles.
@@ -882,16 +911,18 @@ class GrundyRecBruteEff {
      */
     void testCasRobotPlayedRandom(ArrayList<Integer> jeu, int expectedSize, boolean casErreur) {
         if (casErreur == false){
-			System.out.println("\nTest avec le jeu : " + jeu);
-			System.out.println("Taille attendue après coup du robot : " + expectedSize);
+			System.out.println("Test avec le jeu : " + jeu);
+			System.out.print("Taille attendue après coup du robot : " + expectedSize);
 			robotPlayedRandom(jeu);
-			System.out.println("Résultat après coup du robot : " + jeu);
-			System.out.println(jeu.size() == expectedSize ? "OK" : "ECHEC");
-			System.out.println();
+			System.out.print("Résultat après coup du robot : " + jeu + " : ");
+            if (jeu.size() == expectedSize) {
+                System.out.println("OK");
+            }else{
+                System.out.println("ECHEC");
+            }
 		}
         else {
-			System.out.println("erreur : robotPlayedRandom -> situation impossible");
-			System.out.println();
+			System.out.println("ERREUR : robotPlayedRandom -> situation impossible");
 		}
         
     }
@@ -901,7 +932,10 @@ class GrundyRecBruteEff {
      */
     void testRobotPlayedRandom() {
         System.out.println();
-        System.out.println("*** testRobotPlayedRandom() ***");
+        System.out.println();
+        System.out.println("====================== testRobotPlayedRandom() ======================");
+        System.out.println();
+        System.out.println("********** Test des cas normaux **********");
 
         // Case 1 : Robot removes matchsticks from a valid pile
         ArrayList<Integer> jeu1 = new ArrayList<>();
@@ -918,6 +952,7 @@ class GrundyRecBruteEff {
         jeu2.add(9);
         jeu2.add(1);
         int expectedSize2 = 4; 
+        System.out.println();
         System.out.println("Cas 2 : Le robot évite les tas avec 2 allumettes ou moins");
         testCasRobotPlayedRandom(jeu2, expectedSize2, false);
 
@@ -926,6 +961,7 @@ class GrundyRecBruteEff {
         jeu3.add(10);
         jeu3.add(5);
         int expectedSize3 = 3; 
+        System.out.println();
         System.out.println("Cas 3 : Le robot évite de diviser un tas en deux parties égales");
         testCasRobotPlayedRandom(jeu3, expectedSize3, false);
 
@@ -935,6 +971,7 @@ class GrundyRecBruteEff {
         jeu4.add(2);
         jeu4.add(6);
         int expectedSize4 = 4; 
+        System.out.println();
         System.out.println("Cas 4 : Le robot joue sur le seul tas valide");
         testCasRobotPlayedRandom(jeu4, expectedSize4, false);
         
@@ -944,6 +981,7 @@ class GrundyRecBruteEff {
         jeu5.add(1);
         jeu5.add(2);
         int expectedSize5 = 3; // No changes occur
+        System.out.println();
         System.out.println("Cas 5 : Aucun mouvement valide possible");
         testCasRobotPlayedRandom(jeu5, expectedSize5, true);
     }
