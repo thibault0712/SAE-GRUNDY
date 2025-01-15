@@ -26,9 +26,9 @@ class GrundyRecGplusGequalsP {
     ArrayList<ArrayList<Integer>> posGagnantes = new ArrayList<ArrayList<Integer>>();
 
     /**
-     * Type of piles
+     * Type of each piles ( up to 50 ) ( 5 possible types : 0, 1, 2, 3, 4 )
      */
-    int[] dicoType = {0, 0, 0, 1, 0, 2, 1, 0, 2, 1, 0, 2, 1, 3, 2, 1, 3, 2, 4, 3, 0, 4, 3, 0, 4, 3, 0, 4, 1, 2, 3, 1, 2, 4, 1, 2, 4, 1, 2, 4, 1, 5, 4, 1, 5, 4, 1, 5, 4, 1, 0};
+    int[] type = {0, 0, 0, 1, 0, 2, 1, 0, 2, 1, 0, 2, 1, 3, 2, 1, 3, 2, 4, 3, 0, 4, 3, 0, 4, 3, 0, 4, 1, 2, 3, 1, 2, 4, 1, 2, 4, 1, 2, 4, 1, 5, 4, 1, 5, 4, 1, 5, 4, 1, 0};
 
 
     /**
@@ -172,18 +172,28 @@ class GrundyRecGplusGequalsP {
      * @param jeu the table of matchsticks
      */
     void robotEditMatchsticks(ArrayList<Integer> jeu){
-        boolean played = jouerGagnant(jeu);
+        boolean played;
         int i = 0;
-		
-		System.out.println();
-        System.out.println("Robot -> en train de jouer");
 
-        //If it's impossible to have a winning move, the robot will play by removing 1 matchstick from the first line with more than 2 matchsticks
-        while(i < jeu.size() && !played){ 
-            if(jeu.get(i) > 2){
-                robotPlayedRandom(jeu);
-                played = true;
+        if (estPossible(jeu)){
+
+            played = jouerGagnant(jeu);
+            System.out.println("Robot -> en train de jouer");
+    
+            //If it's impossible to have a winning move, the robot will play by removing 1 matchstick from the first line with more than 2 matchsticks
+            while(i < jeu.size() && !played){ 
+
+                if(jeu.get(i) > 2){
+                    robotPlayedRandom(jeu);
+                    played = true;
+                }
+
             }
+
+        }else{
+
+            System.out.println("Erreur robotEditMatchsticks -> Impossible de jouer");
+
         }
     }
 
@@ -197,19 +207,26 @@ class GrundyRecGplusGequalsP {
         int line; // Index of the selected pile
         int nb;   // Number of matchsticks to remove
 
-		System.out.println();
-		System.out.println("Robot -> en train de jouer (choix aléatoire)");
+        if (estPossible(jeu)){
 
-		do {
-            line = (int) (Math.random() * jeu.size()); // Select a random pile
-		} while (jeu.get(line) <= 2); // Ignore the pile wich has 2 matchsticks or less
+            System.out.println("Robot -> en train de jouer (choix aléatoire)");
 
-		do {
-            nb = (int) (Math.random() * (jeu.get(line) - 1)) + 1; // Remove between 1 and (pile size - 1)
-		} while (nb == jeu.get(line) / 2); // Avoid splitting the pile into two equal parts
+            do {
+                line = (int) (Math.random() * jeu.size()); // Select a random pile
+            } while (jeu.get(line) <= 2); // Ignore the pile wich has 2 matchsticks or less
+    
+            do {
+                nb = (int) (Math.random() * (jeu.get(line) - 1)) + 1; // Remove between 1 and (pile size - 1)
+            } while (nb == jeu.get(line) / 2); // Avoid splitting the pile into two equal parts
+    
+            enlever(jeu, line, nb); // Update the game board
+            System.out.println("Robot a retiré " + nb + " allumette(s) du tas " + line + ".");
 
-		enlever(jeu, line, nb); // Update the game board
-		System.out.println("Robot a retiré " + nb + " allumette(s) du tas " + line + ".");
+        }else{
+
+            System.out.println("Erreur robotPlayedRandom -> Impossible de jouer");
+            
+        }
 	}
 	
     /**
@@ -329,9 +346,6 @@ class GrundyRecGplusGequalsP {
 
         return ret;
     }
-
-    
-
 
     /**
      * Indicates if the configuration is know as loosing by checking if the game board is in the list of losing positions.
@@ -489,10 +503,10 @@ class GrundyRecGplusGequalsP {
         ArrayList<Integer> result = new ArrayList<Integer>();
 
         for (int i = 0; i < game.size(); i++) {
-            if (dicoType.length < game.get(i)){
+            if (type.length < game.get(i)){
                 result.add(-1);
             }else{
-                result.add(dicoType[game.get(i)]);
+                result.add(type[game.get(i)]);
             }
         }
 
@@ -514,48 +528,6 @@ class GrundyRecGplusGequalsP {
             ret = !estPerdante(jeu);
         }
         return ret;
-    }
-
-    /**
-     * Test the method jouerGagnant()
-     */
-    void testJouerGagnant() {
-        System.out.println();
-        System.out.println();
-        System.out.println("====================== testJouerGagnant() ======================");
-        System.out.println();
-        System.out.println("********** Test des cas normaux **********");
-        ArrayList<Integer> jeu1 = new ArrayList<Integer>();
-        jeu1.add(6);
-        ArrayList<Integer> resJeu1 = new ArrayList<Integer>();
-        resJeu1.add(4);
-        resJeu1.add(2);
-		
-        testCasJouerGagnant(jeu1, resJeu1, true);
-    }
-
-    /**
-     * Test a case of the method jouerGagnant()
-     *
-     * @param jeu the game board
-     * @param resJeu the game board after playing the winning move
-     * @param res the expected result of jouerGagnant
-     */
-    void testCasJouerGagnant(ArrayList<Integer> jeu, ArrayList<Integer> resJeu, boolean res) {
-        // Arrange
-        System.out.print("jouerGagnant (" + jeu.toString() + ") -> ");
-
-        // Act
-        boolean resExec = jouerGagnant(jeu);
-
-        // Assert
-        System.out.print(jeu.toString() + " " + resExec + " : ");
-		boolean egaliteJeux = jeu.equals(resJeu);
-        if (  egaliteJeux && (res == resExec) ) {
-            System.out.println("OK");
-        } else {
-            System.err.println("ECHEC");
-        }
     }	
 
     /**
@@ -665,48 +637,6 @@ class GrundyRecGplusGequalsP {
     }
 
     /**
-     * Test the method premier()
-     */
-    void testPremier() {
-        System.out.println();
-        System.out.println();
-        System.out.println("====================== testPremier() ======================");
-        System.out.println();
-        System.out.println("********** Test des cas normaux **********");
-        ArrayList<Integer> jeu1 = new ArrayList<Integer>();
-        jeu1.add(10);
-        jeu1.add(11);
-        int ligne1 = 0;
-        ArrayList<Integer> res1 = new ArrayList<Integer>();
-        res1.add(9);
-        res1.add(11);
-        res1.add(1);
-        testCasPremier(jeu1, ligne1, res1);
-    }
-
-    /**
-     * Test a case of the method testPremier
-     * @param jeu the game board
-     * @param ligne the number of the pile that was first split
-     * @param res the game board after the first split
-     */
-    void testCasPremier(ArrayList<Integer> jeu, int ligne, ArrayList<Integer> res) {
-        // Arrange
-        System.out.print("premier (" + jeu.toString() + ") -> ");
-        ArrayList<Integer> jeuEssai = new ArrayList<Integer>();
-        // Act
-        int noLigne = premier(jeu, jeuEssai);
-        // Assert
-        System.out.print(" noLigne = " + noLigne + " jeuEssai = " + jeuEssai.toString() + " : ");
-		boolean egaliteJeux = jeuEssai.equals(res);
-        if ( egaliteJeux && noLigne == ligne ) {
-            System.out.println("OK");
-        } else {
-            System.err.println("ECHEC");
-        }
-    }
-
-    /**
      * Generates the next trial configuration (i.e., a possible decomposition)
      * 
      * @param jeu      game board
@@ -771,6 +701,90 @@ class GrundyRecGplusGequalsP {
         }
 		
         return numTas;
+    }
+
+    /**
+     * Test a case of the method jouerGagnant()
+     *
+     * @param jeu the game board
+     * @param resJeu the game board after playing the winning move
+     * @param res the expected result of jouerGagnant
+     */
+    void testCasJouerGagnant(ArrayList<Integer> jeu, ArrayList<Integer> resJeu, boolean res) {
+        // Arrange
+        System.out.print("jouerGagnant (" + jeu.toString() + ") -> ");
+
+        // Act
+        boolean resExec = jouerGagnant(jeu);
+
+        // Assert
+        System.out.print(jeu.toString() + " " + resExec + " : ");
+		boolean egaliteJeux = jeu.equals(resJeu);
+        if (  egaliteJeux && (res == resExec) ) {
+            System.out.println("OK");
+        } else {
+            System.err.println("ECHEC");
+        }
+    }
+
+    /**
+     * Test the method jouerGagnant()
+     */
+    void testJouerGagnant() {
+        System.out.println();
+        System.out.println();
+        System.out.println("====================== testJouerGagnant() ======================");
+        System.out.println();
+        System.out.println("********** Test des cas normaux **********");
+        ArrayList<Integer> jeu1 = new ArrayList<Integer>();
+        jeu1.add(6);
+        ArrayList<Integer> resJeu1 = new ArrayList<Integer>();
+        resJeu1.add(4);
+        resJeu1.add(2);
+		
+        testCasJouerGagnant(jeu1, resJeu1, true);
+    }
+
+    /**
+     * Test a case of the method testPremier
+     * @param jeu the game board
+     * @param ligne the number of the pile that was first split
+     * @param res the game board after the first split
+     */
+    void testCasPremier(ArrayList<Integer> jeu, int ligne, ArrayList<Integer> res) {
+        // Arrange
+        System.out.print("premier (" + jeu.toString() + ") -> ");
+        ArrayList<Integer> jeuEssai = new ArrayList<Integer>();
+        // Act
+        int noLigne = premier(jeu, jeuEssai);
+        // Assert
+        System.out.print(" noLigne = " + noLigne + " jeuEssai = " + jeuEssai.toString() + " : ");
+		boolean egaliteJeux = jeuEssai.equals(res);
+        if ( egaliteJeux && noLigne == ligne ) {
+            System.out.println("OK");
+        } else {
+            System.err.println("ECHEC");
+        }
+    }
+
+    /**
+     * Test the method premier()
+     */
+    void testPremier() {
+        System.out.println();
+        System.out.println();
+        System.out.println("====================== testPremier() ======================");
+        System.out.println();
+        System.out.println("********** Test des cas normaux **********");
+        ArrayList<Integer> jeu1 = new ArrayList<Integer>();
+        jeu1.add(10);
+        jeu1.add(11);
+        int ligne1 = 0;
+        ArrayList<Integer> res1 = new ArrayList<Integer>();
+        res1.add(9);
+        res1.add(11);
+        res1.add(1);
+        testCasPremier(jeu1, ligne1, res1);
     }
 
      /**
@@ -852,40 +866,7 @@ class GrundyRecGplusGequalsP {
         testCasSuivant(jeu3, jeuEssai3, ligne3, res3, resLigne3);
     }
 
-    /**
-     * Test the efficacity of the method estGagnante
-     */
-    void testEstGagnanteEfficacite(){
-            ArrayList<Integer> jeu;
-            int n = 3;
-            long t1, t2, diffT;
-
-            System.out.println();
-            System.out.println();
-            System.out.println("====================== Test de l'efficacité estGagnante ======================");
-            System.out.println();
-    
-            for ( int i = 1; i <= 16; i++ ) {
-                jeu = new ArrayList<Integer>();
-                jeu.add(n);
-                cpt = 0;
-        
-                t1 = System.currentTimeMillis();
-                estGagnante(jeu);
-                t2 = System.currentTimeMillis();
-                diffT = (t2 - t1);
-    
-                System.out.println ( "***********test " + i );
-                System.out.println ( "Nombre tas = " + jeu.size());
-                System.out.println ( "nbAlumette = " + n);
-                System.out.println ( "Cpt = " + cpt );
-                System.out.println ( "Tps = " + diffT + " ms" );
-    
-                n = n + 1;
-            }    
-    }
-
-	/**
+    	/**
 	 * Test case for displayMatchsticks method
 	 * 
 	 * @param jeu      the input array representing matchsticks
@@ -932,7 +913,7 @@ class GrundyRecGplusGequalsP {
 		testCasDisplayMatchsticks(jeu4, "Jeu actuel : ");
 	}
 
-    /**
+        /**
 	 * Test case for playerEditMatchsticks
 	 * 
 	 * @param jeu          The initial list of matchstick piles.
@@ -1021,29 +1002,49 @@ class GrundyRecGplusGequalsP {
      */
     void testCasRobotEditMatchsticks(ArrayList<Integer> jeu, ArrayList<Integer> expected, boolean playAleatory, boolean casErreur) {
         System.out.println("Test avec le jeu : " + jeu);
+
         if (casErreur == false){
+
             if (playAleatory){
+
                 System.out.print("Attendu : Mouvement aléatoire");
                 robotEditMatchsticks(jeu);
+
                 if (estPossible(jeu)){
+
                     System.out.println("Attendu : " + "(mouvement aléatoire possible)");
                     System.out.println("Résultat : " + jeu + " (mouvement aléatoire possible) : OK");
+
                 }else{
+
                     System.out.println("Résultat : " + jeu + " (mouvement aléatoire impossible)");
                     System.out.println("Attendu : " + "(mouvement aléatoire possible) : ECHEC");
+
                 }
+
             } else {
+
                 System.out.print("Attendu : " + expected);
                 robotEditMatchsticks(jeu);
                 System.out.print("Résultat : " + jeu + " : ");
+
                 if (expected.equals(expected)){
+
                     System.out.println("OK");
+
                 } else {
+
                     System.out.println("ECHEC");
+
                 }
+
             }
         } else {
-            System.out.println("Erreur : robotEditMatchsticks -> situation impossible");
+
+            System.out.print("Erreur attendu : ");
+            robotEditMatchsticks(jeu);
+            System.out.println("Résultat : " + jeu);
+
         }
     }
 
@@ -1094,15 +1095,17 @@ class GrundyRecGplusGequalsP {
         System.out.println("Cas 3 : Le robot joue sur le tas 1 avec 1 allumette enlevée");
         testCasRobotEditMatchsticks(jeu3, res3, false,false);
 
-        // Case 4 : No moves possible for the robot (all piles have <= 2 matchsticks)
+        System.out.println();
+        System.out.println("********** Test des cas d'erreurs **********");
+
+        // Case 1 : No moves possible for the robot (all piles have <= 2 matchsticks)
         ArrayList<Integer> jeu4 = new ArrayList<>();
         jeu4.add(2);
         jeu4.add(2);
         ArrayList<Integer> res4 = new ArrayList<>();
         res4.add(2);
         res4.add(2); // No change, robot cannot play
-        System.out.println();
-        System.out.println("Cas 4 : Aucun mouvement possible pour le robot");
+        System.out.println("Cas 1 : Aucun mouvement possible pour le robot");
         testCasRobotEditMatchsticks(jeu4, res4, false, true);
     }
 
@@ -1114,19 +1117,27 @@ class GrundyRecGplusGequalsP {
      * @param casErreur	   A variable who check if a situation is an Error case
      */
     void testCasRobotPlayedRandom(ArrayList<Integer> jeu, int expectedSize, boolean casErreur) {
+        System.out.println("Test avec le jeu : " + jeu);
+        System.out.println("Taille tableau attendue après coup du robot : " + expectedSize);
+
         if (casErreur == false){
-			System.out.println("Test avec le jeu : " + jeu);
-			System.out.print("Taille attendue après coup du robot : " + expectedSize);
+
 			robotPlayedRandom(jeu);
+
 			System.out.print("Résultat après coup du robot : " + jeu + " : ");
-            if (jeu.size() == expectedSize) {
+            
+            // To check if the robot plays randomly we use expectedSize to verify if the robot played and if the game is possible
+            if (jeu.size() == expectedSize && estPossible(jeu)) {
                 System.out.println("OK");
             }else{
                 System.out.println("ECHEC");
             }
-		}
-        else {
-			System.out.println("ERREUR : robotPlayedRandom -> situation impossible");
+
+		} else {
+
+			System.out.print("Erreur attendu : ");
+            robotPlayedRandom(jeu);
+            
 		}
         
     }
@@ -1179,64 +1190,20 @@ class GrundyRecGplusGequalsP {
         System.out.println("Cas 4 : Le robot joue sur le seul tas valide");
         testCasRobotPlayedRandom(jeu4, expectedSize4, false);
         
+        System.out.println();
+        System.out.println("********** Test des cas d'erreurs **********");
+
         // Case 5 : No valid moves (all piles have <= 2 matchsticks)
         ArrayList<Integer> jeu5 = new ArrayList<>();
         jeu5.add(2);
         jeu5.add(1);
         jeu5.add(2);
         int expectedSize5 = 3; // No changes occur
-        System.out.println();
-        System.out.println("Cas 5 : Aucun mouvement valide possible");
+        System.out.println("Cas 1 : Aucun mouvement valide possible");
         testCasRobotPlayedRandom(jeu5, expectedSize5, true);
     }
 
-    /**
-     * Test a case of the method estConnuePerdante
-     * @param jeu the game board
-     * @param result the expected result
-     */
-    void testCasEstConnuePerdante(ArrayList<Integer> jeu, boolean result){
-        // Arrange
-        System.out.print("estConnuePerdante (" + jeu.toString() + ") -> ");
-        // Act
-        boolean resExec = estConnuePerdante(jeu);
-        // Assert
-        System.out.print(resExec);
-        if (result == resExec) {
-            System.out.println(" : OK");
-        } else {
-            System.err.println(" : ECHECH");
-        }
-    }
-
-
-    /**
-     * Test the method estConnuePerdante
-     */
-    void testEstConnuePerdante(){
-        System.out.println();
-        System.out.println();
-        System.out.println("======================  testEstConnuePerdante() ====================== ");
-        System.out.println();
-        System.out.println("********** Test des cas normaux **********");
-
-        //Case 1 : the game board is known as losing
-        ArrayList<Integer> jeu1 = new ArrayList<Integer>();
-        jeu1.add(4);
-        jeu1.add(6);
-        posPerdantes.clear();
-        posPerdantes.add(jeu1);
-        testCasEstConnuePerdante(jeu1, true);
-
-        //Case 2 : the game board is not known as losing
-        ArrayList<Integer> jeu2 = new ArrayList<Integer>();
-        jeu1.add(5);
-        jeu1.add(7);
-        posPerdantes.clear();
-        testCasEstConnuePerdante(jeu2, false);
-    }
-
-    /**
+        /**
      * Test a case of the method sortGame
      * @param game the game board
      * @param result the expected result
@@ -1288,13 +1255,67 @@ class GrundyRecGplusGequalsP {
     }
 
     /**
+     * Test a case of the method estConnuePerdante
+     * @param jeu the game board
+     * @param result the expected result
+     */
+    void testCasEstConnuePerdante(ArrayList<Integer> jeu, boolean result){
+        // Arrange
+        System.out.print("estConnuePerdante (" + jeu.toString() + ") -> ");
+        // Act
+        boolean resExec = estConnuePerdante(jeu);
+        // Assert
+        System.out.print(resExec);
+        if (result == resExec) {
+            System.out.println(" : OK");
+        } else {
+            System.err.println(" : ECHECH");
+        }
+    }
+
+
+    /**
+     * Test the method estConnuePerdante
+     */
+    void testEstConnuePerdante(){
+        System.out.println();
+        System.out.println();
+        System.out.println("======================  testEstConnuePerdante() ====================== ");
+        System.out.println();
+        System.out.println("********** Test des cas normaux **********");
+
+        //Case 1 : the game board is known as losing
+        ArrayList<Integer> game1 = new ArrayList<Integer>();
+        game1.add(4);
+        game1.add(6);
+        posPerdantes.clear();
+        posPerdantes.add(game1);
+        testCasEstConnuePerdante(game1, true);
+
+        //Case 2 : the game board is not known as losing
+        ArrayList<Integer> game2 = new ArrayList<Integer>();
+        game2.add(5);
+        game2.add(7);
+        posPerdantes.clear();
+        testCasEstConnuePerdante(game2, false);
+
+        System.out.println();
+        System.out.println("********** Test des cas limites **********");
+
+        //Case 1 : the game board is empty
+        ArrayList<Integer> game3 = new ArrayList<Integer>();
+        posPerdantes.clear();
+        testCasEstConnuePerdante(game3, false);
+    }
+
+    /**
      * Test a case of the method estConnueGagnante
      * @param jeu the game board
      * @param result the expected result
      */
     void testCasEstconnueGagnante(ArrayList<Integer> jeu, boolean result){
         // Arrange
-        System.out.print("estConnueGagnante (" + jeu.toString() + ") : ");
+        System.out.print("estConnueGagnante (" + jeu.toString() + ") -> ");
         // Act
         boolean resExec = estConnueGagnante(jeu);
         // Assert
@@ -1326,10 +1347,18 @@ class GrundyRecGplusGequalsP {
 
         //Case 2 : the game board is not known as winning
         ArrayList<Integer> jeu2 = new ArrayList<Integer>();
-        jeu1.add(5);
-        jeu1.add(7);
+        jeu2.add(5);
+        jeu2.add(8);
         posGagnantes.clear();
         testCasEstconnueGagnante(jeu2, false);
+
+        System.out.println();
+        System.out.println("********** Test des cas limites **********");
+
+        //Case 1 : the game board is empty
+        ArrayList<Integer> jeu3 = new ArrayList<Integer>();
+        posGagnantes.clear();
+        testCasEstconnueGagnante(jeu3, false);
     }
 
     /**
@@ -1355,7 +1384,7 @@ class GrundyRecGplusGequalsP {
     void testSimplifyGameBoard(){
         System.out.println();
         System.out.println();
-        System.out.println("====================== testRemoveLoosingPiles() ======================");
+        System.out.println("====================== testSimplifyGameBoard() ======================");
         System.out.println();
         System.out.println("********** Test des cas normaux **********");
 
@@ -1384,6 +1413,15 @@ class GrundyRecGplusGequalsP {
         ArrayList<Integer> res3 = new ArrayList<Integer>();
         res3.add(3);
         testCasSimplifyGameBoard(gameSorted3, res3);
+
+        System.out.println();
+        System.out.println("********** Test des cas limites **********");
+
+        //Case 1 : game board is empty
+        ArrayList<Integer> game4 = new ArrayList<Integer>();
+        ArrayList<Integer> gameSorted4 = sortGame(game4);
+        ArrayList<Integer> res4 = new ArrayList<Integer>();
+        testCasSimplifyGameBoard(gameSorted4, res4);
     }
 
     /**
@@ -1432,6 +1470,46 @@ class GrundyRecGplusGequalsP {
         res2.add(0);
         res2.add(-1);
         testCasConvertPileToType(game2, res2);
+
+        System.out.println();
+        System.out.println("********** Test des cas limites **********");
+
+        //Case 1 : game board [] convert to []
+        ArrayList<Integer> game3 = new ArrayList<Integer>();
+        ArrayList<Integer> res3 = new ArrayList<Integer>();
+        testCasConvertPileToType(game3, res3);
     }
 
+    /**
+     * Test the efficacity of the method estGagnante
+     */
+    void testEstGagnanteEfficacite(){
+            ArrayList<Integer> jeu;
+            int n = 3;
+            long t1, t2, diffT;
+
+            System.out.println();
+            System.out.println();
+            System.out.println("====================== Test de l'efficacité estGagnante ======================");
+            System.out.println();
+    
+            for ( int i = 1; i <= 16; i++ ) {
+                jeu = new ArrayList<Integer>();
+                jeu.add(n);
+                cpt = 0;
+        
+                t1 = System.currentTimeMillis();
+                estGagnante(jeu);
+                t2 = System.currentTimeMillis();
+                diffT = (t2 - t1);
+    
+                System.out.println ( "***********test " + i );
+                System.out.println ( "Nombre tas = " + jeu.size());
+                System.out.println ( "nbAlumette = " + n);
+                System.out.println ( "Cpt = " + cpt );
+                System.out.println ( "Tps = " + diffT + " ms" );
+    
+                n = n + 1;
+            }    
+    }
 }
