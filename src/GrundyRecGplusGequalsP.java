@@ -3,7 +3,7 @@ import java.util.ArrayList;
 /**
  * Grundy Game with AI for the machine
  * This program is an update of grundyRecPerdantNeutre, we improve the simplification of the game board by using the type of piles
- * This version is faster than the previous one because we improve the simplification of the game board so we decrease the number of calculation
+ * This version is faster than the previous one because we improve the simplification
  *
  * @author J-F. Kamp, C. Tibermacine, T. FALEZAN, J. MAILLARD
  */
@@ -35,26 +35,80 @@ class GrundyRecGplusGequalsP {
      * Principal method
      */
     void principal() {
-        // Test methods
-        testJouerGagnant();
-		testPremier();
-		testSuivant();
-		testDisplayMatchsticks();
-		testPlayerEditMatchsticks();
-		testRobotEditMatchsticks() ;
-		testRobotPlayedRandom();
-        testSortGame();
-        testEstConnuePerdante();
-        testEstConnueGagnante();
-        testSimplifyGameBoard();
-        testConvertPileToType();
-        
-        //Efficiency test
-        testEstGagnanteEfficacite();
-        
+        menu();
+    }
+
+    /**
+     * Show the menu of the game
+     */
+    void menu(){
         System.out.println();
-		System.out.println("====================== Lancement du jeu de Grundy ======================");
-        leJeu();
+        System.out.println("+---------------+");
+        System.out.println("| JEU DE GRUNDY |");
+        System.out.println("+---------------+");
+        System.out.println();
+        System.out.println("1. Lancer le jeu");
+        System.out.println("2. Lancer les méthodes de test");
+        System.out.println("3. Lancer le test d'efficacité");
+        System.out.println();
+
+        int selection = SimpleInput.getInt("Votre choix : ");
+        while (selection > 3 || selection < 1){
+            selection = SimpleInput.getInt("Votre choix : ");
+        }
+
+        if (selection == 1){
+            System.out.println();
+            System.out.println();
+            System.out.println();
+            System.out.println("====================== Lancement du jeu de Grundy ======================");
+            System.out.println();
+            leJeu();
+        } else if (selection == 2){
+            testJouerGagnant();
+            testPremier();
+            testSuivant();
+            testDisplayMatchsticks();
+            testPlayerEditMatchsticks();
+            testRobotEditMatchsticks() ;
+            testRobotPlayedRandom();
+            testSortGame();
+            testEstConnuePerdante();
+            testEstConnueGagnante();
+            testSimplifyGameBoard();
+            testConvertPileToType();
+        } else if (selection == 3){
+            testEstGagnanteEfficacite();
+        }
+
+        relancer();
+    }
+
+    /**
+     * Allow player to return to the menu or quit the game
+     */
+    void relancer(){
+        System.out.println();
+        System.out.println();
+        System.out.println("+-------------------------+");
+        System.out.println("| Que voulez-vous faire ? |");
+        System.out.println("+-------------------------+");
+        System.out.println();
+        System.out.println("1. Retourner au menu");
+        System.out.println("2. Quitter");
+        System.out.println();
+
+        int selection = SimpleInput.getInt("Votre choix : ");
+        while (selection > 2 || selection < 1){
+            selection = SimpleInput.getInt("Votre choix : ");
+        }
+
+        if (selection == 1){
+            menu();
+        } else if (selection == 2){
+            System.out.println();
+            System.out.println("Au revoir !");
+        }
     }
 
     /**
@@ -73,7 +127,6 @@ class GrundyRecGplusGequalsP {
 
         do{
             nbMatchSticks = SimpleInput.getInt("Veuillez entrer le nombre d'alumette : ");
-            System.out.println();
         } while (nbMatchSticks <= 2);
 
         jeu = new ArrayList<Integer>();
@@ -299,7 +352,6 @@ class GrundyRecGplusGequalsP {
             // if there are only piles of 1 or 2 matchsticks left on the game board
             // then the situation is necessarily losing (ret=true) = END of recursion
             if ( !estPossible(jeu) ) {
-                posPerdantes.add(gameSorted); // We discovered a new losing position so we add it to the list of losing positions
                 ret = true;
             }else {
                 // creation of a trial game that will examine all possible decompositions
@@ -341,6 +393,11 @@ class GrundyRecGplusGequalsP {
 
                     cpt += 1;
                 }
+            }
+
+            if(ret && !estConnuePerdante(gameSorted) && estPossible(gameSorted)){ 
+                // We discovered a new losing position so we add it to the list of losing positions
+                posPerdantes.add(gameSorted);
             }
         }
 
@@ -1484,32 +1541,34 @@ class GrundyRecGplusGequalsP {
      * Test the efficacity of the method estGagnante
      */
     void testEstGagnanteEfficacite(){
-            ArrayList<Integer> jeu;
-            int n = 3;
-            long t1, t2, diffT;
+        ArrayList<Integer> jeu;
+        int n = 3;
+        long t1, t2, diffT;
 
-            System.out.println();
-            System.out.println();
-            System.out.println("====================== Test de l'efficacité estGagnante ======================");
-            System.out.println();
-    
-            for ( int i = 1; i <= 16; i++ ) {
-                jeu = new ArrayList<Integer>();
-                jeu.add(n);
-                cpt = 0;
+        System.out.println();
+        System.out.println();
+        System.out.println("====================== Test de l'efficacité estGagnante ======================");
+        System.out.println();
         
-                t1 = System.currentTimeMillis();
-                estGagnante(jeu);
-                t2 = System.currentTimeMillis();
-                diffT = (t2 - t1);
+        for ( int i = 1; i <= 50; i++ ) {
+            posPerdantes.clear();
+            posGagnantes.clear();
+            jeu = new ArrayList<Integer>();
+            jeu.add(n);
+            cpt = 0;
     
-                System.out.println ( "***********test " + i );
-                System.out.println ( "Nombre tas = " + jeu.size());
-                System.out.println ( "nbAlumette = " + n);
-                System.out.println ( "Cpt = " + cpt );
-                System.out.println ( "Tps = " + diffT + " ms" );
-    
-                n = n + 1;
-            }    
+            t1 = System.currentTimeMillis();
+            estGagnante(jeu);
+            t2 = System.currentTimeMillis();
+            diffT = (t2 - t1);
+
+            System.out.println ( "***********test " + i );
+            System.out.println ( "Nombre tas = " + jeu.size());
+            System.out.println ( "nbAlumette = " + n);
+            System.out.println ( "Cpt = " + cpt );
+            System.out.println ( "Tps = " + diffT + " ms" );
+
+            n = n + 1;
+        }    
     }
 }

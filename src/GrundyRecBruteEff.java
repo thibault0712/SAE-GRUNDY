@@ -19,21 +19,75 @@ class GrundyRecBruteEff {
      * Principal method
      */
     void principal() {
-        // Test methods
-        testJouerGagnant();
-		testPremier();
-		testSuivant();
-		testDisplayMatchsticks();
-		testPlayerEditMatchsticks();
-		testRobotEditMatchsticks() ;
-		testRobotPlayedRandom();
+        menu();
+    }
 
-        //Efficiency test
-        testEstGagnanteEfficacite();
-		
+    /**
+     * Show the menu of the game
+     */
+    void menu(){
         System.out.println();
-		System.out.println("====================== Lancement du jeu de Grundy ======================");
-        leJeu();
+        System.out.println("+---------------+");
+        System.out.println("| JEU DE GRUNDY |");
+        System.out.println("+---------------+");
+        System.out.println();
+        System.out.println("1. Lancer le jeu");
+        System.out.println("2. Lancer les méthodes de test");
+        System.out.println("3. Lancer le test d'efficacité");
+        System.out.println();
+
+        int selection = SimpleInput.getInt("Votre choix : ");
+        while (selection > 3 || selection < 1){
+            selection = SimpleInput.getInt("Votre choix : ");
+        }
+
+        if (selection == 1){
+            System.out.println();
+            System.out.println();
+            System.out.println();
+            System.out.println("====================== Lancement du jeu de Grundy ======================");
+            System.out.println();
+            leJeu();
+        } else if (selection == 2){
+            testJouerGagnant();
+            testPremier();
+            testSuivant();
+            testDisplayMatchsticks();
+            testPlayerEditMatchsticks();
+            testRobotEditMatchsticks() ;
+            testRobotPlayedRandom();
+        } else if (selection == 3){
+            testEstGagnanteEfficacite();
+        }
+
+        relancer();
+    }
+
+    /**
+     * Allow player to return to the menu or quit the game
+     */
+    void relancer(){
+        System.out.println();
+        System.out.println();
+        System.out.println("+-------------------------+");
+        System.out.println("| Que voulez-vous faire ? |");
+        System.out.println("+-------------------------+");
+        System.out.println();
+        System.out.println("1. Retourner au menu");
+        System.out.println("2. Quitter");
+        System.out.println();
+
+        int selection = SimpleInput.getInt("Votre choix : ");
+        while (selection > 2 || selection < 1){
+            selection = SimpleInput.getInt("Votre choix : ");
+        }
+
+        if (selection == 1){
+            menu();
+        } else if (selection == 2){
+            System.out.println();
+            System.out.println("Au revoir !");
+        }
     }
 
     /**
@@ -52,13 +106,13 @@ class GrundyRecBruteEff {
 
         do{
             nbMatchSticks = SimpleInput.getInt("Veuillez entrer le nombre d'alumette : ");
-            System.out.println();
         } while (nbMatchSticks <= 2);
 
         jeu = new ArrayList<Integer>();
         jeu.add(nbMatchSticks);
 
         while (winner == null){
+            System.out.println();
             displayMatchsticks(jeu);
 
             playerEditMatchsticks(jeu, playerName);
@@ -67,6 +121,7 @@ class GrundyRecBruteEff {
             }
 
             if (winner == null){
+                System.out.println();
                 displayMatchsticks(jeu);
                 robotEditMatchsticks(jeu);
                 if(!estPossible(jeu)){

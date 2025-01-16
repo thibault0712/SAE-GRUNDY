@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 /**
  * Grundy Game with AI for the machine
- * This program is an update of grundyRecPerdEtGagn, now we simplify the game with the methode simplifyGameBoard. Now we simplify posGagnantes by removing all loosing piles inside and estConnueGagnante use also the simplication to check if the game is in the list of wining positions.
+ * This program is an update of grundyRecPerdEtGagn, now we simplify the game with the methode simplifyGameBoard. We simplify posGagnantes by removing all loosing piles inside and estConnueGagnante use also the simplication to check if the game is in the list of wining positions.
  * This version is faster than the previous one because we simplify the game to know if the game is in the list of wining positions.
  *
  * @author J-F. Kamp, C. Tibermacine, T. FALEZAN, J. MAILLARD
@@ -29,25 +29,79 @@ class GrundyRecPerdantNeutre {
      * Principal method
      */
     void principal() {
-        // Test methods
-        testJouerGagnant();
-		testPremier();
-		testSuivant();
-		testDisplayMatchsticks();
-		testPlayerEditMatchsticks();
-		testRobotEditMatchsticks() ;
-		testRobotPlayedRandom();
-        testSortGame();
-        testEstConnuePerdante();
-        testEstConnueGagnante();
-        testSimplifyGameBoard();
-        
-        //Efficiency test
-        testEstGagnanteEfficacite();
-        
+        menu();
+    }
+
+    /**
+     * Show the menu of the game
+     */
+    void menu(){
         System.out.println();
-		System.out.println("====================== Lancement du jeu de Grundy ======================");
-        leJeu();
+        System.out.println("+---------------+");
+        System.out.println("| JEU DE GRUNDY |");
+        System.out.println("+---------------+");
+        System.out.println();
+        System.out.println("1. Lancer le jeu");
+        System.out.println("2. Lancer les méthodes de test");
+        System.out.println("3. Lancer le test d'efficacité");
+        System.out.println();
+
+        int selection = SimpleInput.getInt("Votre choix : ");
+        while (selection > 3 || selection < 1){
+            selection = SimpleInput.getInt("Votre choix : ");
+        }
+
+        if (selection == 1){
+            System.out.println();
+            System.out.println();
+            System.out.println();
+            System.out.println("====================== Lancement du jeu de Grundy ======================");
+            System.out.println();
+            leJeu();
+        } else if (selection == 2){
+            testJouerGagnant();
+            testPremier();
+            testSuivant();
+            testDisplayMatchsticks();
+            testPlayerEditMatchsticks();
+            testRobotEditMatchsticks() ;
+            testRobotPlayedRandom();
+            testSortGame();
+            testEstConnuePerdante();
+            testEstConnueGagnante();
+            testSimplifyGameBoard();
+        } else if (selection == 3){
+            testEstGagnanteEfficacite();
+        }
+
+        relancer();
+    }
+
+    /**
+     * Allow player to return to the menu or quit the game
+     */
+    void relancer(){
+        System.out.println();
+        System.out.println();
+        System.out.println("+-------------------------+");
+        System.out.println("| Que voulez-vous faire ? |");
+        System.out.println("+-------------------------+");
+        System.out.println();
+        System.out.println("1. Retourner au menu");
+        System.out.println("2. Quitter");
+        System.out.println();
+
+        int selection = SimpleInput.getInt("Votre choix : ");
+        while (selection > 2 || selection < 1){
+            selection = SimpleInput.getInt("Votre choix : ");
+        }
+
+        if (selection == 1){
+            menu();
+        } else if (selection == 2){
+            System.out.println();
+            System.out.println("Au revoir !");
+        }
     }
 
     /**
@@ -66,7 +120,6 @@ class GrundyRecPerdantNeutre {
 
         do{
             nbMatchSticks = SimpleInput.getInt("Veuillez entrer le nombre d'alumette : ");
-            System.out.println();
         } while (nbMatchSticks <= 2);
 
         jeu = new ArrayList<Integer>();
@@ -145,7 +198,7 @@ class GrundyRecPerdantNeutre {
 
 		
 		do {
-			nb = SimpleInput.getInt(" -> Choisissez le nombre d'allumettes à retirer (entre 1 et " + (jeu.get(line) - 1) + ") : ");
+			nb = SimpleInput.getInt(playerName + " -> Choisissez le nombre d'allumettes à retirer (entre 1 et " + (jeu.get(line) - 1) + ") : ");
 			
 			if (nb < 1 || nb >= jeu.get(line)) {
 				System.out.println("Erreur : Le nombre d'allumettes à retirer est invalide. Veuillez réessayer. ");
@@ -293,7 +346,6 @@ class GrundyRecPerdantNeutre {
             // if there are only piles of 1 or 2 matchsticks left on the game board
             // then the situation is necessarily losing (ret=true) = END of recursion
             if ( !estPossible(jeu) ) {
-                posPerdantes.add(gameSorted); // We discovered a new losing position so we add it to the list of losing positions
                 ret = true;
             }else {
                 // creation of a trial game that will examine all possible decompositions
@@ -335,6 +387,11 @@ class GrundyRecPerdantNeutre {
 
                     cpt += 1;
                 }
+            }
+
+            if(ret && !estConnuePerdante(gameSorted) && estPossible(gameSorted)){ 
+                // We discovered a new losing position so we add it to the list of losing positions
+                posPerdantes.add(gameSorted);
             }
         }
 
@@ -1365,7 +1422,7 @@ class GrundyRecPerdantNeutre {
         testCasSimplifyGameBoard(gameSorted4, res4);
     }
 
-    /**
+  /**
      * Test the efficacity of the method estGagnante
      */
     void testEstGagnanteEfficacite(){
@@ -1378,7 +1435,9 @@ class GrundyRecPerdantNeutre {
         System.out.println("====================== Test de l'efficacité estGagnante ======================");
         System.out.println();
 
-        for ( int i = 1; i <= 16; i++ ) {
+        for ( int i = 1; i <= 40; i++ ) {
+            posPerdantes.clear();
+            posGagnantes.clear();
             jeu = new ArrayList<Integer>();
             jeu.add(n);
             cpt = 0;
